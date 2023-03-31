@@ -1,4 +1,4 @@
-package com.asj.listed.business.models;
+package com.asj.listed.business.enums;
 
 public enum Rol {
     BLOQUEADO,

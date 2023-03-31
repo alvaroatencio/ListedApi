@@ -1,6 +1,7 @@
 package com.asj.listed.business.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.List;
@@ -10,29 +11,31 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "titulares")
-public class Titulares {
+public class Titular {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
-    @Column(name = "cuit", nullable = false)
+    @NotBlank
+    @Column(name = "cuit")
     private String cuit;
 
+    @NotBlank
     @Column(name = "email1")
     private String email1;
 
     @Column(name = "email2")
     private String email2;
 
-    @Column(name = "nombres", nullable = false)
+    @NotBlank
+    @Column(name = "nombres")
     private String nombres;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuarios usuario;
+    private Usuario usuario;
 
     @OneToMany(mappedBy = "titular")
-    private List<Cuentas> cuentas;
-
+    private List<Cuenta> cuentas;
 }

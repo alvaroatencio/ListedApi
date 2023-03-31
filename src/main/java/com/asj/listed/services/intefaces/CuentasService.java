@@ -1,7 +1,11 @@
 package com.asj.listed.services.intefaces;
 
-import com.asj.listed.business.dto.CuentasDTO;
+import com.asj.listed.business.dto.CuentaDTO;
 import com.asj.listed.repositories.Repositories;
 
-public interface CuentasService extends Repositories<CuentasDTO> {
+import java.util.List;
+import java.util.Optional;
+
+public interface CuentasService extends Repositories<CuentaDTO> {
+    List<CuentaDTO> buscarPorId_usuario(long id);
 }

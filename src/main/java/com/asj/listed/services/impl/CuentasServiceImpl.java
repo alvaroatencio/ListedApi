@@ -1,7 +1,7 @@
 package com.asj.listed.services.impl;
 
-import com.asj.listed.business.dto.CuentasDTO;
-import com.asj.listed.business.entities.Cuentas;
+import com.asj.listed.business.dto.CuentaDTO;
+import com.asj.listed.business.entities.Cuenta;
 import com.asj.listed.exceptions.NotFoundException;
 import com.asj.listed.mapper.CuentasMapper;
 import com.asj.listed.repositories.CuentasRepository;
@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,34 +23,37 @@ public class CuentasServiceImpl implements CuentasService {
     private final CuentasMapper mapper;
 
     public CuentasServiceImpl(CuentasRepository repo, @Qualifier("cuentasMapperImpl") CuentasMapper mapper) {
-        this.repo=repo;
+        this.repo = repo;
         this.mapper = mapper;
     }
 
     @Override
-    public List<CuentasDTO> listarTodos() {
-        List<Cuentas> cuentas = repo.findAll();
+    public List<CuentaDTO> listarTodos() {
+        List<Cuenta> cuentas = repo.findAll();
         return cuentas.stream().map(mapper::cuentasEntityToCuentasDTO).collect(Collectors.toList());
     }
+
     @Override
-    public Optional<CuentasDTO> buscarPorId(int id) {
-        Optional<Cuentas> cuentas = repo.findById(id);
+    public Optional<CuentaDTO> buscarPorId(long id) {
+        Optional<Cuenta> cuentas = repo.findById(id);
         return cuentas.map(mapper::cuentasEntityToCuentasDTO);
     }
+
     @Override
-    public CuentasDTO crear(CuentasDTO cuentaDTO) {
-        Cuentas cuenta = mapper.cuentasDTOToCuentasEntity(cuentaDTO);
+    public CuentaDTO crear(CuentaDTO cuentaDTO) {
+        Cuenta cuenta = mapper.cuentasDTOToCuentasEntity(cuentaDTO);
         log.info("Creando cuenta: {}", cuentaDTO);
         return mapper.cuentasEntityToCuentasDTO(repo.save(cuenta));
     }
+
     @Override
-    public CuentasDTO actualizar(int id, CuentasDTO cuentaDTO) {
-        Optional<Cuentas> optionalCuenta = repo.findById(id);
+    public CuentaDTO actualizar(long id, CuentaDTO cuentaDTO) {
+        Optional<Cuenta> optionalCuenta = repo.findById(id);
         if (optionalCuenta.isPresent()) {
-            Cuentas cuenta = optionalCuenta.get();
-            if (!StringUtils.isEmpty(cuentaDTO.getNro_cuenta())) {
-                cuenta.setNroCuenta(cuentaDTO.getNro_cuenta());
-                log.info("Actualizanda cuenta con id: "+id+" con nueva cuenta: {}", cuenta.getId(), cuenta.getNroCuenta());
+            Cuenta cuenta = optionalCuenta.get();
+            if (!StringUtils.isEmpty(cuentaDTO.getNroCuenta())) {
+                cuenta.setNroCuenta(cuentaDTO.getNroCuenta());
+                log.info("Actualizanda cuenta con id: " + id + " con nueva cuenta: {}", cuenta.getId(), cuenta.getNroCuenta());
             }
             if (!StringUtils.isEmpty(cuentaDTO.getCbu())) {
                 cuenta.setCbu(cuentaDTO.getCbu());
@@ -57,11 +61,11 @@ public class CuentasServiceImpl implements CuentasService {
             }
             if (!StringUtils.isEmpty(cuentaDTO.getSucursal())) {
                 cuenta.setSucursal(cuenta.getSucursal());
-                log.info("Actualizanda cuenta con id: \"+id+\" con nueva sucursal: {}",cuenta.getId(), cuenta.getSucursal());
+                log.info("Actualizanda cuenta con id: \"+id+\" con nueva sucursal: {}", cuenta.getId(), cuenta.getSucursal());
             }
             if (!StringUtils.isEmpty(cuentaDTO.getSucursal())) {
                 cuenta.setSucursal(cuenta.getSucursal());
-                log.info("Actualizanda cuenta con id: \"+id+\" con nueva sucursal: {}",cuenta.getId(), cuenta.getSucursal());
+                log.info("Actualizanda cuenta con id: \"+id+\" con nueva sucursal: {}", cuenta.getId(), cuenta.getSucursal());
             }
 
             //// TODO: 27/3/2023        SEGUIR CON ESTO
@@ -71,21 +75,32 @@ public class CuentasServiceImpl implements CuentasService {
             //
 
             //
-            return mapper. cuentasEntityToCuentasDTO(repo.save(cuenta));
+            return mapper.cuentasEntityToCuentasDTO(repo.save(cuenta));
         } else {
             throw new RuntimeException("Usuario con id " + id + " no existe");
         }
     }
 
     @Override
-    public Optional<CuentasDTO> eliminar(int id) {
-        Optional<Cuentas> cuentaAEliminar = repo.findById(id);
+    public Optional<CuentaDTO> eliminar(long id) {
+        Optional<Cuenta> cuentaAEliminar = repo.findById(id);
         if (cuentaAEliminar.isPresent()) {
-            Cuentas usuarioEliminado = cuentaAEliminar.get();
+            Cuenta usuarioEliminado = cuentaAEliminar.get();
             repo.delete(usuarioEliminado);
             return Optional.of(mapper.cuentasEntityToCuentasDTO(usuarioEliminado));
         } else {
-            throw new NotFoundException(Cuentas.class, String.valueOf(id));
+            throw new NotFoundException(Cuenta.class, String.valueOf(id));
         }
+    }
+
+    @Override
+    public List<CuentaDTO> buscarPorId_usuario(long id_usuario) {
+        List<Cuenta> cuentas = repo.findByUsuario_Id(id_usuario);
+        List<CuentaDTO> cuentasDTO = new ArrayList<>();
+        for (Cuenta cuenta : cuentas) {
+                CuentaDTO cuentaDTO = mapper.cuentasEntityToCuentasDTO(cuenta); // convertir entidad a DTO
+                cuentasDTO.add(cuentaDTO); // agregar DTO a la lista de cuentas DTO
+            }
+        return cuentasDTO;
     }
 }

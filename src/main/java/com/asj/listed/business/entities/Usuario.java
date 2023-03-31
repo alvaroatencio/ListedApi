@@ -1,35 +1,41 @@
 package com.asj.listed.business.entities;
 
-import com.asj.listed.business.models.Rol;
+import com.asj.listed.business.enums.Rol;
 import jakarta.persistence.*;
 import lombok.*;
 import jakarta.validation.constraints.NotBlank;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "usuarios")
-public class Usuarios {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    private Long id;
+
     @NotBlank
     @Column(name = "usuario", nullable = false, unique = true)
     private String usuario;
+
     @NotBlank
     @Column(name = "mail", nullable = false, unique = true)
     private String mail;
+
     @Column(name = "password", nullable = false)
     private String password;
+
     @Column(name = "token")
-    Integer token;
+    private Integer token;
+
     @Column(name = "rol", nullable = false)
     @Enumerated(EnumType.STRING)
     private Rol rol;
-    @OneToMany(mappedBy = "usuario")
-    private List<Cuentas> cuentas;
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Cuenta> cuentas = new ArrayList<>();
 }

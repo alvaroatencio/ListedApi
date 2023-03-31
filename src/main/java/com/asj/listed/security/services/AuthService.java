@@ -1,16 +1,8 @@
 package com.asj.listed.security.services;
 
-import com.asj.listed.security.dtos.LoginRequestDTO;
-import com.asj.listed.business.entities.Usuarios;
-import com.asj.listed.security.services.JwtService;
-import com.asj.listed.exceptions.NotFoundException;
 import com.asj.listed.repositories.UsuariosRepository;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class AuthService {

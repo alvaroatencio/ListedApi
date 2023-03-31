@@ -1,6 +1,6 @@
 package com.asj.listed.services.impl;
 
-import com.asj.listed.business.entities.Titulares;
+import com.asj.listed.business.entities.Titular;
 import com.asj.listed.repositories.TitularesRepository;
 import com.asj.listed.services.intefaces.TitularesService;
 import org.springframework.stereotype.Service;
@@ -17,29 +17,29 @@ public class TitularesServiceImpl implements TitularesService {
 
 
     @Override
-    public List<Titulares> listarTodos() {
+    public List<Titular> listarTodos() {
         return repo.findAll();
     }
 
     @Override
-    public Optional<Titulares> buscarPorId(int id) {
+    public Optional<Titular> buscarPorId(long id) {
         return repo.findById(id);
     }
 
     @Override
-    public Titulares crear(Titulares titular) {
+    public Titular crear(Titular titular) {
         return repo.save(titular);
     }
 
     @Override
-    public Titulares actualizar(int id, Titulares titular) {
+    public Titular actualizar(long id, Titular titular) {
         //// TODO: 21/3/2023  falta code
         return repo.save(titular);
     }
 
     @Override
-    public Optional<Titulares> eliminar(int id) {
-        Optional<Titulares> titularBorrado = repo.findById(id);
+    public Optional<Titular> eliminar(long id) {
+        Optional<Titular> titularBorrado = repo.findById(id);
         repo.deleteById(id);
         return titularBorrado;
     }

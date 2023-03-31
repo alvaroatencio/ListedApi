@@ -1,7 +1,7 @@
 package com.asj.listed.services.impl;
 
-import com.asj.listed.business.dto.UsuariosDTO;
-import com.asj.listed.business.entities.Usuarios;
+import com.asj.listed.business.dto.UsuarioDTO;
+import com.asj.listed.business.entities.Usuario;
 import com.asj.listed.exceptions.CreateDuplicatedException;
 import com.asj.listed.exceptions.NotFoundException;
 import com.asj.listed.mapper.UsuariosMapper;
@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-//todo validaciones de db
 @Service
 @Slf4j
 public class UsuariosServiceImpl implements UsuariosService {
@@ -25,36 +24,37 @@ public class UsuariosServiceImpl implements UsuariosService {
     private final UsuariosMapper mapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UsuariosServiceImpl( UsuariosRepository repo,@Qualifier("usuariosMapperImpl") UsuariosMapper mapper,PasswordEncoder passwordEncoder) {
+    public UsuariosServiceImpl(UsuariosRepository repo, @Qualifier("usuariosMapperImpl") UsuariosMapper mapper, PasswordEncoder passwordEncoder) {
         this.repo = repo;
         this.mapper = mapper;
         this.passwordEncoder=passwordEncoder;
     }
     @Override
-    public List<UsuariosDTO> listarTodos() {
-        List<Usuarios> usuarios = repo.findAll();
+    public List<UsuarioDTO> listarTodos() {
+        List<Usuario> usuarios = repo.findAll();
         return usuarios.stream().map(mapper::usuariosEntityToUsuariosDTO).collect(Collectors.toList());
     }
     @Override
-    public Optional<UsuariosDTO> buscarPorId(int id) {
-        Optional<Usuarios> usuario = repo.findById(id);
+    public Optional<UsuarioDTO> buscarPorId(long id) {
+        Optional<Usuario> usuario = repo.findById(id);
         return usuario.map(mapper::usuariosEntityToUsuariosDTO);
     }
     @Override
-    public UsuariosDTO crear(UsuariosDTO usuarioDTO) {
-        if (repo.findByUsuario(usuarioDTO.getUsuario()).isPresent())throw new CreateDuplicatedException("usuario");
-        if (repo.findByMail(usuarioDTO.getMail()).isPresent())throw new CreateDuplicatedException("mail");
+    public UsuarioDTO crear(UsuarioDTO usuarioDTO) {
+        System.out.println("UsuariosServiceImpl.crear");
+        if (repo.findByUsuario(usuarioDTO.getUsuario()).isPresent())throw new CreateDuplicatedException("Usuario");
+        if (repo.findByMail(usuarioDTO.getMail()).isPresent())throw new CreateDuplicatedException("Mail");
         String passwordCifrado = passwordEncoder.encode(usuarioDTO.getPassword());
         usuarioDTO.setPassword(passwordCifrado);
-        Usuarios usuario = mapper.usuariosDTOToUsuariosEntity(usuarioDTO);
+        Usuario usuario = mapper.usuariosDTOToUsuariosEntity(usuarioDTO);
         log.info("Creando usuario: {}", usuarioDTO.getUsuario());
         return mapper.usuariosEntityToUsuariosDTO(repo.save(usuario));
     }
     @Override
-    public UsuariosDTO actualizar(int id, UsuariosDTO usuarioDTO) {
-        Optional<Usuarios> optionalUsuario = repo.findById(id);
+    public UsuarioDTO actualizar(long id, UsuarioDTO usuarioDTO) {
+        Optional<Usuario> optionalUsuario = repo.findById(id);
         if (optionalUsuario.isPresent()) {
-            Usuarios usuario = optionalUsuario.get();
+            Usuario usuario = optionalUsuario.get();
             if (!StringUtils.isEmpty(usuarioDTO.getUsuario())) {
                 usuario.setUsuario(usuarioDTO.getUsuario());
                 log.info("Actualizando usuario con id: {} con nuevo usuario: {}", usuario.getId(), usuario.getUsuario());
@@ -75,23 +75,19 @@ public class UsuariosServiceImpl implements UsuariosService {
     }
 
     @Override
-    public Optional<UsuariosDTO> eliminar(int id) {
-        Optional<Usuarios> usuarioAEliminar = repo.findById(id);
+    public Optional<UsuarioDTO> eliminar(long id) {
+        Optional<Usuario> usuarioAEliminar = repo.findById(id);
         if (usuarioAEliminar.isPresent()) {
-            Usuarios usuarioEliminado = usuarioAEliminar.get();
+            Usuario usuarioEliminado = usuarioAEliminar.get();
             repo.delete(usuarioEliminado);
             return Optional.of(mapper.usuariosEntityToUsuariosDTO(usuarioEliminado));
         } else {
-            throw new NotFoundException(Usuarios.class, String.valueOf(id));
+            throw new NotFoundException(Usuario.class, String.valueOf(id));
         }
     }
     @Override
-    public boolean usuarioExistente(String usuario) {
-        return repo.findByUsuario(usuario).isPresent();
-    }
-    @Override
-    public boolean mailExistente(String mail) {
-        return repo.findByUsuario(mail).isPresent();
+    public UsuarioDTO buscarUsuario(String usuarioOmail) {
+        return mapper.usuariosEntityToUsuariosDTO(repo.findByUsuarioOrMail(usuarioOmail, usuarioOmail).get());
     }
 
 }

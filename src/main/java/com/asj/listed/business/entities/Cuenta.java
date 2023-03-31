@@ -3,16 +3,15 @@ package com.asj.listed.business.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "cuentas")
-public class Cuentas {
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Cuenta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "alias")
     private String alias;
@@ -29,11 +28,11 @@ public class Cuentas {
     @Column(name = "sucursal")
     private String sucursal;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "id_titular", nullable = false)
-    private Titulares titular;
+    private Titular titular;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuarios usuario;
+    @ManyToOne()
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
 }

@@ -3,6 +3,7 @@ package com.asj.listed.security.services;
 import com.asj.listed.security.entities.Usuario;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,10 +14,11 @@ import java.util.Date;
 import java.util.function.Function;
 @Service
 public class JwtService {
-    @Value("${jwt.secret}")
-    private String jwtSecret;
-    @Value("${jwt.expiration}")
-    private int jwtExpiration;
+    //@Value("${jwt.secret}")
+    private String jwtSecret="6666888877779999SKKFDSKJFKSDJGKBNRJaaaaaassds";
+    //@Value("${jwt.expiration}")
+    private int jwtExpiration=600000000;
+
     public String crearToken(Authentication authentication){
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             Date expirationDate = new Date(System.currentTimeMillis() + jwtExpiration);
