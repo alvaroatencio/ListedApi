@@ -52,6 +52,7 @@ public class UsuariosController {
                     || StringUtils.isEmpty(usuarioDTO.getPassword())) {
                 Map<String, Object> response = new HashMap<>();
                 response.put("success", Boolean.FALSE);
+
                 response.put("message", "Faltan datos obligatorios para crear el usuario");
                 return ResponseEntity.badRequest().body(response);
             }

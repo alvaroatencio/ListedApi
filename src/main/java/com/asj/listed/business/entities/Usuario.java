@@ -2,6 +2,8 @@ package com.asj.listed.business.entities;
 
 import com.asj.listed.business.enums.Rol;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import jakarta.validation.constraints.NotBlank;
 
@@ -20,6 +22,7 @@ public class Usuario {
     private Long id;
 
     @NotBlank
+    @Size(min = 5, message = "El usuario debe tener al menos 5 caracteres")
     @Column(name = "usuario", nullable = false, unique = true)
     private String usuario;
 
