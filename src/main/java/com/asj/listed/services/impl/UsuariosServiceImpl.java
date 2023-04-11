@@ -1,5 +1,4 @@
 package com.asj.listed.services.impl;
-
 import com.asj.listed.business.dto.UsuarioDTO;
 import com.asj.listed.business.entities.Usuario;
 import com.asj.listed.exceptions.CreateDuplicatedException;
@@ -11,10 +10,8 @@ import com.asj.listed.services.intefaces.UsuariosService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
