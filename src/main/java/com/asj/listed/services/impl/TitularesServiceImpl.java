@@ -17,7 +17,7 @@ public class TitularesServiceImpl implements TitularesService {
 
 
     @Override
-    public List<Titular> listarTodos() {
+    public List<Titular> findAll() {
         return repo.findAll();
     }
 

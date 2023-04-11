@@ -1,6 +1,7 @@
 package com.asj.listed.controllers;
 
 import com.asj.listed.business.dto.UsuarioDTO;
+import com.asj.listed.exceptions.ErrorProcessException;
 import com.asj.listed.exceptions.NotFoundException;
 import com.asj.listed.services.impl.UsuariosServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +24,9 @@ public class UsuariosController {
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
-    public ResponseEntity<List<UsuarioDTO>> buscarUsuarios() {
+    public ResponseEntity<List<UsuarioDTO>> buscarUsuarios() throws ErrorProcessException {
         log.info("Buscando todos los usuarios");
-        List<UsuarioDTO> usuarios = service.listarTodos();
+        List<UsuarioDTO> usuarios = service.findAll();
         log.info("Usuarios encontrados: {}", usuarios.size());
         return ResponseEntity.status(HttpStatus.OK).body(usuarios);
     }

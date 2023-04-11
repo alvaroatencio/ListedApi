@@ -3,10 +3,12 @@ package com.asj.listed.services.impl;
 import com.asj.listed.business.dto.UsuarioDTO;
 import com.asj.listed.business.entities.Usuario;
 import com.asj.listed.exceptions.CreateDuplicatedException;
+import com.asj.listed.exceptions.ErrorProcessException;
 import com.asj.listed.exceptions.NotFoundException;
 import com.asj.listed.mapper.UsuariosMapper;
 import com.asj.listed.repositories.UsuariosRepository;
 import com.asj.listed.services.intefaces.UsuariosService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,21 +20,20 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class UsuariosServiceImpl implements UsuariosService {
     private final UsuariosRepository repo;
     private final UsuariosMapper mapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UsuariosServiceImpl(UsuariosRepository repo, @Qualifier("usuariosMapperImpl") UsuariosMapper mapper, PasswordEncoder passwordEncoder) {
-        this.repo = repo;
-        this.mapper = mapper;
-        this.passwordEncoder=passwordEncoder;
-    }
     @Override
-    public List<UsuarioDTO> listarTodos() {
+    public List<UsuarioDTO> findAll() throws ErrorProcessException {
         List<Usuario> usuarios = repo.findAll();
-        return usuarios.stream().map(mapper::usuariosEntityToUsuariosDTO).collect(Collectors.toList());
+        return usuarios
+                .stream()
+                .map(mapper::usuariosEntityToUsuariosDTO).
+                collect(Collectors.toList());
     }
     @Override
     public Optional<UsuarioDTO> buscarPorId(long id) {

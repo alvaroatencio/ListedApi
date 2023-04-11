@@ -28,7 +28,7 @@ public class CuentasServiceImpl implements CuentasService {
     }
 
     @Override
-    public List<CuentaDTO> listarTodos() {
+    public List<CuentaDTO> findAll() {
         List<Cuenta> cuentas = repo.findAll();
         return cuentas.stream().map(mapper::cuentasEntityToCuentasDTO).collect(Collectors.toList());
     }

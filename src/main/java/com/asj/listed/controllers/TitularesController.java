@@ -29,7 +29,7 @@ public class TitularesController {
     }
     @GetMapping()
     public ResponseEntity buscarTitulares() {
-        return ResponseEntity.status(HttpStatus.OK).body(service.listarTodos());
+        return ResponseEntity.status(HttpStatus.OK).body(service.findAll());
     }
     @GetMapping("/{id}")
     public ResponseEntity buscarTitularById(@PathVariable Integer id){

@@ -15,9 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -49,7 +47,7 @@ public class CuentasController {
         log.info("Buscando las cuentas del usuario {}", usuario.getId());
         List<CuentaDTO> cuentas;
         if (usuario.getRol().equals(Rol.ADMIN)) {
-             cuentas = service.listarTodos();
+             cuentas = service.findAll();
             return ResponseEntity.status(HttpStatus.OK).body(cuentas);
         } else if (usuario.getRol().equals(Rol.USUARIO)) {
              cuentas = service.buscarPorId_usuario(usuario.getId());

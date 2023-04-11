@@ -3,6 +3,7 @@ package com.asj.listed.services.impl;
 import com.asj.listed.business.dto.UsuarioDTO;
 import com.asj.listed.business.entities.Usuario;
 import com.asj.listed.datos.datosDummy;
+import com.asj.listed.exceptions.ErrorProcessException;
 import com.asj.listed.mapper.UsuariosMapper;
 import com.asj.listed.repositories.UsuariosRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,14 +36,14 @@ class UsuariosServiceImplTest {
     void setUp(){
     }
     @Test
-    void listarTodos() {
+    void listarTodos() throws ErrorProcessException {
         //GIVEN
         when(this.repo.findAll())
                 .thenReturn(Arrays.asList(
                         datosDummy.getUsuarioAdmin()
                 ));
         //WHEN
-        List<UsuarioDTO> usuarioDTOList = service.listarTodos();
+        List<UsuarioDTO> usuarioDTOList = service.findAll();
         //THEN
         assertThat(usuarioDTOList.isEmpty()).isFalse();
         assertThat(usuarioDTOList.size()).isEqualTo(1);
