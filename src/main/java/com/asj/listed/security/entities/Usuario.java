@@ -1,6 +1,6 @@
 package com.asj.listed.security.entities;
 
-import com.asj.listed.business.enums.Rol;
+import com.asj.listed.model.enums.Rol;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

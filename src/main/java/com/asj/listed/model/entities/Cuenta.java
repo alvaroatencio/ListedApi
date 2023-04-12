@@ -1,4 +1,4 @@
-package com.asj.listed.business.entities;
+package com.asj.listed.model.entities;
 
 import jakarta.persistence.*;
 import lombok.*;

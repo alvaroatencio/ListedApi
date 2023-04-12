@@ -1,10 +1,11 @@
 package com.asj.listed.services.impl;
 
-import com.asj.listed.business.dto.UsuarioDTO;
-import com.asj.listed.business.entities.Usuario;
+import com.asj.listed.model.dto.UsuarioDTO;
+import com.asj.listed.model.entities.Usuario;
 import com.asj.listed.datos.datosDummy;
 import com.asj.listed.exceptions.ErrorProcessException;
 import com.asj.listed.mapper.UsuariosMapper;
+import com.asj.listed.model.response.UsuarioResponse;
 import com.asj.listed.repositories.UsuariosRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ class UsuariosServiceImplTest {
                         datosDummy.getUsuarioAdmin()
                 ));
         //WHEN
-        List<UsuarioDTO> usuarioDTOList = service.findAll();
+        List<UsuarioResponse> usuarioDTOList = service.findAll();
         //THEN
         assertThat(usuarioDTOList.isEmpty()).isFalse();
         assertThat(usuarioDTOList.size()).isEqualTo(1);
@@ -60,16 +61,16 @@ class UsuariosServiceImplTest {
                 datosDummy.getUsuarioAdmin()
         ));
         //WHEN
-        Optional<UsuarioDTO> usuarioEncontrado = this.service.buscarPorId(usuarioDTO.getId());
+        UsuarioDTO usuarioEncontrado = this.service.findById(usuarioDTO.getId());
         //THEN
-        assertThat(usuarioEncontrado.isPresent()).isFalse();
+        assertThat(usuarioEncontrado);
         verify(repo).findById(usuarioDTO.getId());
     }
 
     @Test
-    void crear() {
+    void crear() throws ErrorProcessException {
         UsuarioDTO usuarioDTO = datosDummy.getUsuarioAdminDTO();
-        service.crear(usuarioDTO);
+        service.add(usuarioDTO);
         //GIVEN
         when(
                 this.repo.save(

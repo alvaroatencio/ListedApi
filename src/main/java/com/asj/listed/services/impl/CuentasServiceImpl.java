@@ -1,9 +1,11 @@
 package com.asj.listed.services.impl;
 
-import com.asj.listed.business.dto.CuentaDTO;
-import com.asj.listed.business.entities.Cuenta;
+import com.asj.listed.exceptions.ErrorProcessException;
+import com.asj.listed.model.dto.CuentaDTO;
+import com.asj.listed.model.entities.Cuenta;
 import com.asj.listed.exceptions.NotFoundException;
 import com.asj.listed.mapper.CuentasMapper;
+import com.asj.listed.model.response.CuentasResponse;
 import com.asj.listed.repositories.CuentasRepository;
 import com.asj.listed.services.intefaces.CuentasService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.asj.listed.exceptions.response.ErrorResponse.ERROR_NOT_FOUND;
 
 @Service
 @Slf4j
@@ -28,26 +32,35 @@ public class CuentasServiceImpl implements CuentasService {
     }
 
     @Override
-    public List<CuentaDTO> findAll() {
-        List<Cuenta> cuentas = repo.findAll();
-        return cuentas.stream().map(mapper::cuentasEntityToCuentasDTO).collect(Collectors.toList());
+    public List<CuentasResponse> findAll() throws ErrorProcessException {
+        try {
+            return repo.findAll().stream()
+                    .map(CuentasResponse::toResponse)
+                    .collect(Collectors.toList());
+        } catch (RuntimeException e) {
+            throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
+        }
     }
 
     @Override
-    public Optional<CuentaDTO> buscarPorId(long id) {
-        Optional<Cuenta> cuentas = repo.findById(id);
-        return cuentas.map(mapper::cuentasEntityToCuentasDTO);
+    public CuentasResponse findById(long id) throws ErrorProcessException {
+        Cuenta cuentas = repo.findById(id).orElseThrow(() -> new NotFoundException("Cuenta no encontrada"));
+        try {
+            return CuentasResponse.toResponse(cuentas);
+        }catch(RuntimeException e){
+            throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
+        }
     }
 
     @Override
-    public CuentaDTO crear(CuentaDTO cuentaDTO) {
+    public CuentasResponse add(CuentaDTO cuentaDTO) throws ErrorProcessException{
         Cuenta cuenta = mapper.cuentasDTOToCuentasEntity(cuentaDTO);
         log.info("Creando cuenta: {}", cuentaDTO);
-        return mapper.cuentasEntityToCuentasDTO(repo.save(cuenta));
+        return CuentasResponse.toResponse(repo.save(cuenta));
     }
 
     @Override
-    public CuentaDTO actualizar(long id, CuentaDTO cuentaDTO) {
+    public CuentasResponse update(long id, CuentaDTO cuentaDTO) throws  ErrorProcessException{
         Optional<Cuenta> optionalCuenta = repo.findById(id);
         if (optionalCuenta.isPresent()) {
             Cuenta cuenta = optionalCuenta.get();
@@ -75,32 +88,30 @@ public class CuentasServiceImpl implements CuentasService {
             //
 
             //
-            return mapper.cuentasEntityToCuentasDTO(repo.save(cuenta));
+            return CuentasResponse.toResponse(repo.save(cuenta));
         } else {
             throw new RuntimeException("Usuario con id " + id + " no existe");
         }
     }
 
     @Override
-    public Optional<CuentaDTO> eliminar(long id) {
-        Optional<Cuenta> cuentaAEliminar = repo.findById(id);
-        if (cuentaAEliminar.isPresent()) {
-            Cuenta usuarioEliminado = cuentaAEliminar.get();
-            repo.delete(usuarioEliminado);
-            return Optional.of(mapper.cuentasEntityToCuentasDTO(usuarioEliminado));
-        } else {
-            throw new NotFoundException(Cuenta.class, String.valueOf(id));
+    public CuentasResponse delete(long id) throws  ErrorProcessException{
+        Cuenta cuentaAEliminar = repo.findById(id).orElseThrow(() -> new NotFoundException("Cuenta no encontrada"));
+        try {
+            repo.delete(cuentaAEliminar);
+            return CuentasResponse.toResponse(cuentaAEliminar);
+        }catch(RuntimeException e){
+            throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
     }
 
     @Override
-    public List<CuentaDTO> buscarPorId_usuario(long id_usuario) {
-        List<Cuenta> cuentas = repo.findByUsuario_Id(id_usuario);
-        List<CuentaDTO> cuentasDTO = new ArrayList<>();
-        for (Cuenta cuenta : cuentas) {
-                CuentaDTO cuentaDTO = mapper.cuentasEntityToCuentasDTO(cuenta); // convertir entidad a DTO
-                cuentasDTO.add(cuentaDTO); // agregar DTO a la lista de cuentas DTO
+    public List<CuentasResponse> buscarPorId_usuario(long id_usuario){
+        List<CuentasResponse> cuentas = repo.findByUsuario_Id(id_usuario);
+        List<CuentasResponse> cuentasResponse = new ArrayList<>();
+        for (CuentasResponse cuenta : cuentas) {
+                cuentasResponse.add(cuenta); // agregar DTO a la lista de cuentas DTO
             }
-        return cuentasDTO;
+        return cuentasResponse;
     }
 }

@@ -1,8 +1,10 @@
 package com.asj.listed.services.intefaces;
 
-import com.asj.listed.business.dto.UsuarioDTO;
+import com.asj.listed.exceptions.ErrorProcessException;
+import com.asj.listed.model.dto.UsuarioDTO;
+import com.asj.listed.model.response.UsuarioResponse;
 import com.asj.listed.repositories.Repositories;
 
-public interface UsuariosService extends Repositories<UsuarioDTO> {
-    UsuarioDTO buscarUsuario(String usuarioOmail);
+public interface UsuariosService extends Repositories<UsuarioResponse,UsuarioDTO> {
+    UsuarioResponse buscarUsuario(String usuarioOmail) throws ErrorProcessException;
 }

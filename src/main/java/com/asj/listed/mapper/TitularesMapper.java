@@ -1,7 +1,7 @@
 package com.asj.listed.mapper;
 
-import com.asj.listed.business.dto.TitularDTO;
-import com.asj.listed.business.entities.Titular;
+import com.asj.listed.model.dto.TitularDTO;
+import com.asj.listed.model.entities.Titular;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 

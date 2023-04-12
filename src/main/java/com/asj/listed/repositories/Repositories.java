@@ -4,12 +4,12 @@ import com.asj.listed.exceptions.ErrorProcessException;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.List;
-import java.util.Optional;
+
 @NoRepositoryBean
-public interface Repositories<T> {
+public interface Repositories<T,R> {
     List<T> findAll() throws ErrorProcessException;
-    Optional<T> buscarPorId(long id);
-    T crear(T t);
-    T actualizar (long id,T t);
-    Optional<T> eliminar (long id);
+    T findById(long id)throws ErrorProcessException;
+    T add(R t) throws ErrorProcessException;
+    T update(long id, R t) throws ErrorProcessException;
+    T delete(long id) throws ErrorProcessException;
 }

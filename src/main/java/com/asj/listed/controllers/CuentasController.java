@@ -1,16 +1,19 @@
 package com.asj.listed.controllers;
 
-import com.asj.listed.business.dto.CuentaDTO;
-import com.asj.listed.business.dto.UsuarioDTO;
-import com.asj.listed.business.enums.Rol;
+import com.asj.listed.exceptions.ErrorProcessException;
+import com.asj.listed.model.dto.CuentaDTO;
+import com.asj.listed.model.dto.UsuarioDTO;
+import com.asj.listed.model.enums.Rol;
 import com.asj.listed.exceptions.NotFoundException;
 import com.asj.listed.mapper.CuentasMapper;
+import com.asj.listed.model.response.CuentasResponse;
+import com.asj.listed.model.response.UsuarioResponse;
 import com.asj.listed.security.services.JwtService;
 import com.asj.listed.services.impl.CuentasServiceImpl;
 import com.asj.listed.services.impl.UsuariosServiceImpl;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,11 +24,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/cuentas")
 @Slf4j
+@RequiredArgsConstructor
 public class CuentasController {
     private final CuentasServiceImpl service;
     private final UsuariosServiceImpl serviceUsuarios;
@@ -33,19 +36,13 @@ public class CuentasController {
     @Autowired
     JwtService tokenService;
 
-    public CuentasController(CuentasServiceImpl service, UsuariosServiceImpl serviceUsuarios, @Qualifier("cuentasMapperImpl") CuentasMapper mapper) {
-        this.service = service;
-        this.serviceUsuarios = serviceUsuarios;
-        this.mapper = mapper;
-    }
-
     @PreAuthorize("hasRole('ADMIN')or hasRole('USUARIO')")
     @GetMapping()
-    public ResponseEntity<?> buscarCuentas() {
+    public ResponseEntity<?> buscarCuentas() throws ErrorProcessException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UsuarioDTO usuario = serviceUsuarios.buscarUsuario(authentication.getName());
+        UsuarioResponse usuario = serviceUsuarios.buscarUsuario(authentication.getName());
         log.info("Buscando las cuentas del usuario {}", usuario.getId());
-        List<CuentaDTO> cuentas;
+        List<CuentasResponse> cuentas;
         if (usuario.getRol().equals(Rol.ADMIN)) {
              cuentas = service.findAll();
             return ResponseEntity.status(HttpStatus.OK).body(cuentas);
@@ -60,20 +57,13 @@ public class CuentasController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("{id}")
-    public ResponseEntity<CuentaDTO> buscarCuentasPorId(@PathVariable int id) {
+    public ResponseEntity<?> buscarCuentasPorId(@PathVariable int id) throws ErrorProcessException {
         log.info("Buscando cuenta con id: {}", id);
-        Optional<CuentaDTO> usuario = service.buscarPorId(id);
-        if (usuario.isPresent()) {
-            log.info("Cuenta encontrada: {}", usuario.get());
-            return ResponseEntity.status(HttpStatus.OK).body(usuario.get());
-        } else {
-            log.warn("No se encontró cuenta con id: {}", id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return  ResponseEntity.status(HttpStatus.OK).body(service.findById(id));
     }
     @PreAuthorize("hasRole('ADMIN')or hasRole('USUARIO')")
     @PostMapping()
-    public ResponseEntity<?> crearCuenta(@RequestHeader(name = "Authorization") String token , @RequestBody CuentaDTO cuentaDTO) {
+    public ResponseEntity<?> crearCuenta(@RequestHeader(name = "Authorization") String token , @RequestBody CuentaDTO cuentaDTO) throws ErrorProcessException {
         log.info("Solicitud de creacion de cuenta recibida");
         // Validaciones de nulidad
         //// TODO: 27/3/2023  sacar esto este false
@@ -87,7 +77,7 @@ public class CuentasController {
         cuentaDTO.setUsuarioId(22L);
         System.out.println(cuentaDTO);
         // Creación de cuenta
-        CuentaDTO cuentaCreada = service.crear(cuentaDTO);
+        CuentasResponse cuentaCreada = service.add(cuentaDTO);
         System.out.println("CuentasController.crearCuenta"+cuentaCreada);
         // Respuesta
         Map<String, Object> response = new HashMap<>();
@@ -103,10 +93,10 @@ public class CuentasController {
         log.info("Solicitud de actualización de cuenta recibida");
         Map<String, Object> response = new HashMap<>();
         try {
-            CuentaDTO usuarioActualizado = service.actualizar(id, usuarioDTO);
+            CuentasResponse cuentaActualizada = service.update(id, usuarioDTO);
             response.put("success", Boolean.TRUE);
             response.put("message", "Cuenta actualizada exitosamente");
-            response.put("usuario", usuarioActualizado);
+            response.put("usuario", cuentaActualizada);
             log.info("Solicitud de actualización de cuenta exitosa");
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (NotFoundException e) {
@@ -124,12 +114,8 @@ public class CuentasController {
 
     @PreAuthorize("hasRole('USUARIO') or hasRole('ADMIN')")
     @DeleteMapping("{id}")
-    public ResponseEntity<?> eliminarUsuario(@PathVariable int id) {
-        Optional<CuentaDTO> usuarioEliminado = service.eliminar(id);
-        if (usuarioEliminado.isPresent()) {
-            return ResponseEntity.ok(usuarioEliminado.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<?> eliminarUsuario(@PathVariable int id) throws ErrorProcessException {
+        CuentasResponse usuarioEliminado = service.delete(id);
+        return ResponseEntity.ok().body(usuarioEliminado);
     }
 }

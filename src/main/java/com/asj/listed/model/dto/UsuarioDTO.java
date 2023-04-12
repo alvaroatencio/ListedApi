@@ -1,8 +1,6 @@
-package com.asj.listed.business.dto;
+package com.asj.listed.model.dto;
 
-import com.asj.listed.business.entities.Cuenta;
-import com.asj.listed.business.enums.Rol;
-import jakarta.persistence.OneToMany;
+import com.asj.listed.model.enums.Rol;
 import lombok.*;
 
 @Data

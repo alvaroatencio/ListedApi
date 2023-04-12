@@ -1,13 +1,13 @@
 package com.asj.listed.datos;
 
-import com.asj.listed.business.dto.UsuarioDTO;
-import com.asj.listed.business.entities.Cuenta;
-import com.asj.listed.business.entities.Usuario;
+import com.asj.listed.model.dto.UsuarioDTO;
+import com.asj.listed.model.entities.Cuenta;
+import com.asj.listed.model.entities.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.asj.listed.business.enums.Rol.ADMIN;
+import static com.asj.listed.model.enums.Rol.ADMIN;
 
 public class datosDummy {
     public static Usuario getUsuarioAdmin() {

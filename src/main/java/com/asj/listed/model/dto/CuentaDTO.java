@@ -1,4 +1,4 @@
-package com.asj.listed.business.dto;
+package com.asj.listed.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,8 +1,7 @@
-package com.asj.listed.business.entities;
+package com.asj.listed.model.entities;
 
-import com.asj.listed.business.enums.Rol;
+import com.asj.listed.model.enums.Rol;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import jakarta.validation.constraints.NotBlank;

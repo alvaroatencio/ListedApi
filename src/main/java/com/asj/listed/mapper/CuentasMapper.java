@@ -1,10 +1,8 @@
 package com.asj.listed.mapper;
 
-import com.asj.listed.business.dto.CuentaDTO;
-import com.asj.listed.business.entities.Cuenta;
-import com.asj.listed.business.entities.Titular;
+import com.asj.listed.model.dto.CuentaDTO;
+import com.asj.listed.model.entities.Cuenta;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
 
 @Component

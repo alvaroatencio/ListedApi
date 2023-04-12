@@ -1,6 +1,6 @@
 package com.asj.listed.security.services;
 
-import com.asj.listed.business.entities.Usuario;
+import com.asj.listed.model.entities.Usuario;
 import com.asj.listed.repositories.UsuariosRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

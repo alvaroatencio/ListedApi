@@ -1,5 +1,6 @@
 package com.asj.listed.security.services;
 
+import com.asj.listed.exceptions.UnauthorizedException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,28 +28,19 @@ public class JwtService {
                     .signWith(SignatureAlgorithm.HS256, jwtSecret)
                     .compact();
     }
-    public boolean validateToken(String token) {
+    public boolean isTokenValid(String token){
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
-        } catch (MalformedJwtException e) {
-            System.out.println("Invalid JWT token");
-        } catch (ExpiredJwtException e) {
-            System.out.println("Expired JWT token");
-        } catch (UnsupportedJwtException e) {
-            System.out.println("Unsupported JWT token");
-        } catch (IllegalArgumentException e) {
-            System.out.println("JWT claims string is empty");
+        } catch (MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+            return false;
         }
-        return false;
     }
     public String getUserNameFromToken(String token) {
-        if(validateToken(token)){
+        if(isTokenValid(token)){
             return extractClaim(token, Claims::getSubject);
         }
-        //// TODO: 26/3/2023  borrar esto y mejorar
-        System.out.println("JwtService.getUserNameFromToken: algo salio mal");
-        return "false";
+        throw new UnauthorizedException("No autorizado");
     }
     private Date getExpirationFromToken(String token) {
         return extractClaim(token, Claims::getExpiration);

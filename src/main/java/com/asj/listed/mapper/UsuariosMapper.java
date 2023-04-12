@@ -1,7 +1,7 @@
 package com.asj.listed.mapper;
 
-import com.asj.listed.business.dto.UsuarioDTO;
-import com.asj.listed.business.entities.Usuario;
+import com.asj.listed.model.dto.UsuarioDTO;
+import com.asj.listed.model.entities.Usuario;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 

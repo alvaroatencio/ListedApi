@@ -1,9 +1,10 @@
-package com.asj.listed.exceptions;
+package com.asj.listed.exceptions.response;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("error")
 public class ErrorResponse {
+    public static final String ERROR_NOT_FOUND = "An error occurred in the process: ";
     private String message;
     private int code;
 

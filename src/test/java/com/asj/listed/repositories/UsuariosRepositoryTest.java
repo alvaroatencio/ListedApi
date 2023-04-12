@@ -1,6 +1,6 @@
 package com.asj.listed.repositories;
 
-import com.asj.listed.business.entities.Usuario;
+import com.asj.listed.model.entities.Usuario;
 import com.asj.listed.datos.datosDummy;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
