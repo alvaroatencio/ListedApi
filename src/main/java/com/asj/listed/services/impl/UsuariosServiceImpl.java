@@ -62,7 +62,7 @@ public class UsuariosServiceImpl implements UsuariosService {
         }
     }
     @Override
-    public UsuarioResponse update(long id, UsuarioDTO usuarioDTO) {
+    public UsuarioResponse update(long id, UsuarioDTO usuarioDTO) throws ErrorProcessException {
         Optional<Usuario> optionalUsuario = userRepository.findById(id);
         if (optionalUsuario.isPresent()) {
             Usuario usuario = optionalUsuario.get();
@@ -79,9 +79,13 @@ public class UsuariosServiceImpl implements UsuariosService {
                 usuario.setPassword(passwordCifrado);
                 log.info("Actualizando usuario con id: \"+id+\" con nueva contraseña");
             }
-            return UsuarioResponse.toResponse(userRepository.save(usuario));
+            try {
+                return UsuarioResponse.toResponse(userRepository.save(usuario));
+            }catch (RuntimeException e){
+                throw  new ErrorProcessException(e.getMessage());
+            }
         } else {
-            throw new RuntimeException("Usuario con id " + id + " no existe");
+            throw new NotFoundException("Usuario con id " + id + " no existe");
         }
     }
 

@@ -52,7 +52,7 @@ class UsuariosServiceImplTest {
     }
 
     @Test
-    void buscarPorId() {
+    void buscarPorId() throws ErrorProcessException {
         UsuarioDTO usuarioDTO = datosDummy.getUsuarioAdminDTO();
         this.repo.save(datosDummy.getUsuarioAdmin());
         //GIVEN
@@ -61,7 +61,7 @@ class UsuariosServiceImplTest {
                 datosDummy.getUsuarioAdmin()
         ));
         //WHEN
-        UsuarioDTO usuarioEncontrado = this.service.findById(usuarioDTO.getId());
+        UsuarioResponse usuarioEncontrado = this.service.findById(usuarioDTO.getId());
         //THEN
         assertThat(usuarioEncontrado);
         verify(repo).findById(usuarioDTO.getId());

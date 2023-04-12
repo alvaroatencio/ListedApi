@@ -20,7 +20,7 @@ public class UsuarioResponse {
     private Integer token;
     private Rol rol;
 
-    public static  UsuarioResponse toResponse(Usuario usuario){
+    public static UsuarioResponse toResponse(Usuario usuario){
         return UsuarioResponse.builder()
                 .id(usuario.getId())
                 .usuario(usuario.getUsuario())
