@@ -60,7 +60,10 @@ public class CuentasController {
     @GetMapping("{id}")
     public ResponseEntity<?> findAccountById(@PathVariable int id) throws ErrorProcessException {
         log.info("Buscando cuenta con id: {}", id);
-        return ResponseEntity.status(HttpStatus.OK).body(service.findById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(new GeneralResponse(
+                true,
+                "Cuentas buscadas exitosamente",
+                service.findById(id)));
     }
 
     @PreAuthorize("hasRole('ADMIN')or hasRole('USUARIO')")
@@ -85,7 +88,9 @@ public class CuentasController {
     @PreAuthorize("hasRole('USUARIO') or hasRole('ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteAccount(@PathVariable int id) throws ErrorProcessException {
-        CuentasResponse usuarioEliminado = service.delete(id);
-        return ResponseEntity.ok().body(usuarioEliminado);
+        return ResponseEntity.ok().body(new GeneralResponse(
+                true,
+                "Cuenta actualizada exitosamente",
+                service.delete(id)));
     }
 }
