@@ -12,7 +12,6 @@ public class ConfigHandlerException {
     /*Errores de autenticacion*/
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<?> handleUnauthorizedException(UnauthorizedException e) {
-        System.out.println("ConfigHandlerException.handleUnauthorizedException aca wachin");
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(buildResponse(e.getMessage(), HttpStatus.UNAUTHORIZED));

@@ -3,7 +3,6 @@ package com.asj.listed.services.impl;
 import com.asj.listed.exceptions.DuplicatedEntityException;
 import com.asj.listed.exceptions.ErrorProcessException;
 import com.asj.listed.exceptions.NotFoundException;
-import com.asj.listed.mapper.UsuariosMapper;
 import com.asj.listed.model.dto.UsuarioRequest;
 import com.asj.listed.model.entities.Usuario;
 import com.asj.listed.model.response.UsuarioResponse;

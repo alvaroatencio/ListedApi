@@ -2,12 +2,12 @@ package com.asj.listed.services.impl;
 
 import com.asj.listed.exceptions.ErrorProcessException;
 import com.asj.listed.exceptions.NotFoundException;
-import com.asj.listed.mapper.CuentasMapper;
 import com.asj.listed.model.dto.CuentaDTO;
 import com.asj.listed.model.entities.Cuenta;
 import com.asj.listed.model.response.CuentasResponse;
 import com.asj.listed.repositories.CuentasRepository;
 import com.asj.listed.services.intefaces.CuentasService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,16 +20,10 @@ import java.util.stream.Collectors;
 import static com.asj.listed.exceptions.response.ErrorResponse.ERROR_NOT_FOUND;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class CuentasServiceImpl implements CuentasService {
     private final CuentasRepository cuentaRepository;
-    private final CuentasMapper mapper;
-
-    public CuentasServiceImpl(CuentasRepository cuentaRepository, @Qualifier("cuentasMapperImpl") CuentasMapper mapper) {
-        this.cuentaRepository = cuentaRepository;
-        this.mapper = mapper;
-    }
-
     @Override
     public List<CuentasResponse> findAll() throws ErrorProcessException {
         try {
