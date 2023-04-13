@@ -24,14 +24,17 @@ public class UsuariosController {
     public ResponseEntity<?> findAllUsers() throws ErrorProcessException {
         return ResponseEntity.status(HttpStatus.OK).body(new GeneralResponse(
                 true,
-                "Usuario creado exitosamente",
+                "Usuarios buscados exitosamente",
                 usuarioService.findAll()));
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findUserById(@PathVariable int id) throws ErrorProcessException {
-        return ResponseEntity.ok(usuarioService.findById(id));
+        return ResponseEntity.ok(new GeneralResponse(
+                true,
+                "Usuario buscado exitosamente",
+                usuarioService.findById(id)));
     }
 
     @PostMapping()
@@ -54,6 +57,9 @@ public class UsuariosController {
     @PreAuthorize("hasRole('USUARIO') or hasRole('ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteUser(@PathVariable int id) throws ErrorProcessException {
-        return ResponseEntity.ok(usuarioService.delete(id));
+        return ResponseEntity.ok(new GeneralResponse(
+                true,
+                "Usuario eliminado exitosamente",
+                usuarioService.delete(id)));
     }
 }

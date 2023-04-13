@@ -29,30 +29,30 @@ public class TitularesController {
         this.mapper = mapper;
     }
     @GetMapping()
-    public ResponseEntity buscarTitulares() throws ErrorProcessException {
+    public ResponseEntity findAllHolders() throws ErrorProcessException {
         return ResponseEntity.status(HttpStatus.OK).body(service.findAll());
     }
     @GetMapping("/{id}")
-    public ResponseEntity buscarTitularById(@PathVariable Integer id){
+    public ResponseEntity findHolderById(@PathVariable Integer id){
         Titular titularBuscado;
         //// TODO: 21/3/2023  no se si este TRY esta bien
         return ResponseEntity.status(HttpStatus.OK).body("rehacer");
     }
     @PreAuthorize("hasRole('USUARIO') or hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity crearTitular(@RequestHeader(name = "Authorization") String token ,@RequestBody TitularDTO titularBodyDTO) throws ErrorProcessException {
+    public ResponseEntity addHolder(@RequestHeader(name = "Authorization") String token , @RequestBody TitularDTO titularBodyDTO) throws ErrorProcessException {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.add(titularBodyDTO));
     }
     @PreAuthorize("hasRole('USUARIO') or hasRole('ADMIN')")
     @PutMapping
-    public ResponseEntity actualizarTitular(@PathVariable("id") Integer id,@RequestBody TitularDTO titularBodyDTO) throws ErrorProcessException {
+    public ResponseEntity updateHolder(@PathVariable("id") Integer id, @RequestBody TitularDTO titularBodyDTO) throws ErrorProcessException {
         TitularResponse titularResponseDTO = service.update(id,titularBodyDTO);
         log.info("UPDATE titular con id: "+ id +"\nDatos previos: "+titularBodyDTO.toString());
         return ResponseEntity.status(HttpStatus.CREATED).body(titularResponseDTO);
     }
     @PreAuthorize("hasRole('USUARIO') or hasRole('ADMIN')")
     @DeleteMapping("{id}")
-    public ResponseEntity borrarTitular(@PathVariable("id") int id) throws ErrorProcessException {
+    public ResponseEntity deleteHolder(@PathVariable("id") int id) throws ErrorProcessException {
         TitularResponse titularBorrado = service.delete(id);
         Map<String,Object> response = new HashMap<>();
         response.put("sucess", Boolean.TRUE);
