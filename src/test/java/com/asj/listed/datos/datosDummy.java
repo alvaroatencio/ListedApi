@@ -1,6 +1,6 @@
 package com.asj.listed.datos;
 
-import com.asj.listed.model.dto.UsuarioDTO;
+import com.asj.listed.model.dto.UsuarioRequest;
 import com.asj.listed.model.entities.Cuenta;
 import com.asj.listed.model.entities.Usuario;
 
@@ -14,7 +14,7 @@ public class datosDummy {
         List<Cuenta> cuentas=new ArrayList<>();
         return new Usuario(5L, "Administrador", "admin@gmail.com", "123456789",12345,ADMIN,cuentas);
     }
-    public static UsuarioDTO getUsuarioAdminDTO() {
-        return new UsuarioDTO(5L, "Administrador", "admin@gmail.com", "123456789",12345,ADMIN);
+    public static UsuarioRequest getUsuarioAdminDTO() {
+        return new UsuarioRequest(5L, "Administrador", "admin@gmail.com", "123456789",12345,ADMIN);
     }
 }

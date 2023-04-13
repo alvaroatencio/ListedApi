@@ -2,7 +2,6 @@ package com.asj.listed.controllers;
 
 import com.asj.listed.exceptions.ErrorProcessException;
 import com.asj.listed.model.dto.CuentaDTO;
-import com.asj.listed.model.dto.UsuarioDTO;
 import com.asj.listed.model.enums.Rol;
 import com.asj.listed.exceptions.NotFoundException;
 import com.asj.listed.mapper.CuentasMapper;

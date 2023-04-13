@@ -1,10 +1,10 @@
 package com.asj.listed.services.impl;
 
 import com.asj.listed.exceptions.ErrorProcessException;
-import com.asj.listed.model.dto.CuentaDTO;
-import com.asj.listed.model.entities.Cuenta;
 import com.asj.listed.exceptions.NotFoundException;
 import com.asj.listed.mapper.CuentasMapper;
+import com.asj.listed.model.dto.CuentaDTO;
+import com.asj.listed.model.entities.Cuenta;
 import com.asj.listed.model.response.CuentasResponse;
 import com.asj.listed.repositories.CuentasRepository;
 import com.asj.listed.services.intefaces.CuentasService;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.asj.listed.exceptions.response.ErrorResponse.ERROR_NOT_FOUND;
@@ -23,20 +22,24 @@ import static com.asj.listed.exceptions.response.ErrorResponse.ERROR_NOT_FOUND;
 @Service
 @Slf4j
 public class CuentasServiceImpl implements CuentasService {
-    private final CuentasRepository repo;
+    private final CuentasRepository cuentaRepository;
     private final CuentasMapper mapper;
 
-    public CuentasServiceImpl(CuentasRepository repo, @Qualifier("cuentasMapperImpl") CuentasMapper mapper) {
-        this.repo = repo;
+    public CuentasServiceImpl(CuentasRepository cuentaRepository, @Qualifier("cuentasMapperImpl") CuentasMapper mapper) {
+        this.cuentaRepository = cuentaRepository;
         this.mapper = mapper;
     }
 
     @Override
     public List<CuentasResponse> findAll() throws ErrorProcessException {
         try {
-            return repo.findAll().stream()
+            log.info("Searching for all accounts");
+            List<CuentasResponse> cuentas = cuentaRepository.findAll()
+                    .stream()
                     .map(CuentasResponse::toResponse)
                     .collect(Collectors.toList());
+            log.info("Found accounts: {}", cuentas.size());
+            return cuentas;
         } catch (RuntimeException e) {
             throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
@@ -44,74 +47,65 @@ public class CuentasServiceImpl implements CuentasService {
 
     @Override
     public CuentasResponse findById(long id) throws ErrorProcessException {
-        Cuenta cuentas = repo.findById(id).orElseThrow(() -> new NotFoundException("Cuenta no encontrada"));
+        Cuenta cuentas = cuentaRepository.findById(id).orElseThrow(() -> new NotFoundException("Account with id " + id + " does not exist"));
         try {
             return CuentasResponse.toResponse(cuentas);
-        }catch(RuntimeException e){
+        } catch (RuntimeException e) {
             throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
     }
 
+    //// TODO: 12/4/2023  ARREGLAR EN ESTOS METODOS LAS RELACIONES
     @Override
-    public CuentasResponse add(CuentaDTO cuentaDTO) throws ErrorProcessException{
-        Cuenta cuenta = mapper.cuentasDTOToCuentasEntity(cuentaDTO);
-        log.info("Creando cuenta: {}", cuentaDTO);
-        return CuentasResponse.toResponse(repo.save(cuenta));
-    }
-
-    @Override
-    public CuentasResponse update(long id, CuentaDTO cuentaDTO) throws  ErrorProcessException{
-        Optional<Cuenta> optionalCuenta = repo.findById(id);
-        if (optionalCuenta.isPresent()) {
-            Cuenta cuenta = optionalCuenta.get();
-            if (!StringUtils.isEmpty(cuentaDTO.getNroCuenta())) {
-                cuenta.setNroCuenta(cuentaDTO.getNroCuenta());
-                log.info("Actualizanda cuenta con id: " + id + " con nueva cuenta: {}", cuenta.getId(), cuenta.getNroCuenta());
-            }
-            if (!StringUtils.isEmpty(cuentaDTO.getCbu())) {
-                cuenta.setCbu(cuentaDTO.getCbu());
-                log.info("Actualizanda cuenta con id: \"+id+\" con nuevo mail: {}", cuenta.getId(), cuenta.getCbu());
-            }
-            if (!StringUtils.isEmpty(cuentaDTO.getSucursal())) {
-                cuenta.setSucursal(cuenta.getSucursal());
-                log.info("Actualizanda cuenta con id: \"+id+\" con nueva sucursal: {}", cuenta.getId(), cuenta.getSucursal());
-            }
-            if (!StringUtils.isEmpty(cuentaDTO.getSucursal())) {
-                cuenta.setSucursal(cuenta.getSucursal());
-                log.info("Actualizanda cuenta con id: \"+id+\" con nueva sucursal: {}", cuenta.getId(), cuenta.getSucursal());
-            }
-
-            //// TODO: 27/3/2023        SEGUIR CON ESTO
-
-            //
-
-            //
-
-            //
-            return CuentasResponse.toResponse(repo.save(cuenta));
-        } else {
-            throw new RuntimeException("Usuario con id " + id + " no existe");
-        }
-    }
-
-    @Override
-    public CuentasResponse delete(long id) throws  ErrorProcessException{
-        Cuenta cuentaAEliminar = repo.findById(id).orElseThrow(() -> new NotFoundException("Cuenta no encontrada"));
+    public CuentasResponse add(CuentaDTO cuentaDTO) throws ErrorProcessException {
+        log.info("Account creation request received");
         try {
-            repo.delete(cuentaAEliminar);
-            return CuentasResponse.toResponse(cuentaAEliminar);
-        }catch(RuntimeException e){
+            log.info("Creating account: {}", cuentaDTO);
+            return CuentasResponse.toResponse(cuentaRepository.save(CuentaDTO.toEntity(cuentaDTO)));
+        } catch (RuntimeException e) {
             throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
     }
 
     @Override
-    public List<CuentasResponse> buscarPorId_usuario(long id_usuario){
-        List<CuentasResponse> cuentas = repo.findByUsuario_Id(id_usuario);
+    public CuentasResponse update(long id, CuentaDTO cuentaDTO) throws ErrorProcessException {
+        log.info("Request for changes on account with id: " + id);
+        Cuenta cuenta = cuentaRepository.findById(id).orElseThrow(() -> new NotFoundException("Account with id " + id + " does not exist"));
+        if (!StringUtils.isEmpty(cuentaDTO.getNroCuenta()))
+            cuenta.setNroCuenta(cuentaDTO.getNroCuenta());
+        if (!StringUtils.isEmpty(cuentaDTO.getCbu()))
+            cuenta.setCbu(cuentaDTO.getCbu());
+        if (!StringUtils.isEmpty(cuentaDTO.getSucursal()))
+            cuenta.setSucursal(cuenta.getSucursal());
+        if (!StringUtils.isEmpty(cuentaDTO.getBanco()))
+            cuenta.setBanco(cuentaDTO.getBanco());
+        if (!StringUtils.isEmpty(cuentaDTO.getAlias()))
+            cuenta.setAlias(cuentaDTO.getAlias());
+        try {
+            return CuentasResponse.toResponse(cuentaRepository.save(cuenta));
+        } catch (RuntimeException e) {
+            throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
+        }
+    }
+
+    @Override
+    public CuentasResponse delete(long id) throws ErrorProcessException {
+        Cuenta cuentaAEliminar = cuentaRepository.findById(id).orElseThrow(() -> new NotFoundException("Account with id " + id + " does not exist"));
+        try {
+            cuentaRepository.delete(cuentaAEliminar);
+            return CuentasResponse.toResponse(cuentaAEliminar);
+        } catch (RuntimeException e) {
+            throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<CuentasResponse> buscarPorId_usuario(long id_usuario) {
+        List<CuentasResponse> cuentas = cuentaRepository.findByUsuario_Id(id_usuario);
         List<CuentasResponse> cuentasResponse = new ArrayList<>();
         for (CuentasResponse cuenta : cuentas) {
-                cuentasResponse.add(cuenta); // agregar DTO a la lista de cuentas DTO
-            }
+            cuentasResponse.add(cuenta); // agregar DTO a la lista de cuentas DTO
+        }
         return cuentasResponse;
     }
 }

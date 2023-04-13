@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class TitularResponse {
-    private int id;
+    private long id;
     private String cuit;
     private String email1;
     private String email2;

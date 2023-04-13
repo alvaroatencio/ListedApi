@@ -1,6 +1,6 @@
 package com.asj.listed.services.impl;
 
-import com.asj.listed.model.dto.UsuarioDTO;
+import com.asj.listed.model.dto.UsuarioRequest;
 import com.asj.listed.model.entities.Usuario;
 import com.asj.listed.datos.datosDummy;
 import com.asj.listed.exceptions.ErrorProcessException;
@@ -53,30 +53,30 @@ class UsuariosServiceImplTest {
 
     @Test
     void buscarPorId() throws ErrorProcessException {
-        UsuarioDTO usuarioDTO = datosDummy.getUsuarioAdminDTO();
+        UsuarioRequest usuarioRequest = datosDummy.getUsuarioAdminDTO();
         this.repo.save(datosDummy.getUsuarioAdmin());
         //GIVEN
-        when(this.repo.findById(usuarioDTO.getId())
+        when(this.repo.findById(usuarioRequest.getId())
         ).thenReturn( Optional.of(
                 datosDummy.getUsuarioAdmin()
         ));
         //WHEN
-        UsuarioResponse usuarioEncontrado = this.service.findById(usuarioDTO.getId());
+        UsuarioResponse usuarioEncontrado = this.service.findById(usuarioRequest.getId());
         //THEN
         assertThat(usuarioEncontrado);
-        verify(repo).findById(usuarioDTO.getId());
+        verify(repo).findById(usuarioRequest.getId());
     }
 
     @Test
     void crear() throws ErrorProcessException {
-        UsuarioDTO usuarioDTO = datosDummy.getUsuarioAdminDTO();
-        service.add(usuarioDTO);
+        UsuarioRequest usuarioRequest = datosDummy.getUsuarioAdminDTO();
+        service.add(usuarioRequest);
         //GIVEN
         when(
                 this.repo.save(
-                        mapper.usuariosDTOToUsuariosEntity(usuarioDTO)
+                        mapper.usuariosDTOToUsuariosEntity(usuarioRequest)
                 )
-        ).thenReturn(mapper.usuariosDTOToUsuariosEntity(usuarioDTO));
+        ).thenReturn(mapper.usuariosDTOToUsuariosEntity(usuarioRequest));
         //THEN
         ArgumentCaptor<Usuario> userArgumentCaptor = ArgumentCaptor.forClass(Usuario.class);
         verify(repo).save(userArgumentCaptor.capture());

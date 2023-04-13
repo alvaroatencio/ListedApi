@@ -30,4 +30,14 @@ public class UsuarioResponse {
                 .rol(usuario.getRol())
                 .build();
     }
+    public static Usuario toEntity(UsuarioResponse usuarioResponse){
+        return Usuario.builder()
+                .id(usuarioResponse.getId())
+                .usuario(usuarioResponse.getUsuario())
+                .mail(usuarioResponse.getMail())
+                .password(usuarioResponse.getPassword())
+                .token(usuarioResponse.getToken())
+                .rol(usuarioResponse.getRol())
+                .build();
+    }
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Builder
 @Table(name = "cuentas")
 @Data
 @NoArgsConstructor

@@ -24,14 +24,19 @@ public class TitularesServiceImpl implements TitularesService {
     public final TitularesRepository titularRepository;
 
     @Override
-    public List<TitularResponse> findAll() {
-        log.info("Buscando todos los titulares");
-        List<TitularResponse> titulares = titularRepository.findAll().stream()
-                .map(TitularResponse::toResponse)
-                .collect(Collectors.toList());
-        return titulares;
+    public List<TitularResponse> findAll() throws ErrorProcessException {
+        try {
+            log.info("Buscando todos los titulares");
+            List<TitularResponse> titulares = titularRepository.findAll()
+                    .stream()
+                    .map(TitularResponse::toResponse)
+                    .collect(Collectors.toList());
+            log.info("Titulares encontrados: {}", titulares.size());
+            return titulares;
+        }catch(RuntimeException e){
+            throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
+        }
     }
-
     @Override
     public TitularResponse findById(long id) throws ErrorProcessException {
         Titular titular = titularRepository.findById(id).orElseThrow(() -> new NotFoundException("Titular no encontrada"));
@@ -41,32 +46,36 @@ public class TitularesServiceImpl implements TitularesService {
             throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
     }
-
+    //// TODO: 12/4/2023  ARREGLAR EN ESTOS METODOS LAS RELACIONES
     @Override
     public TitularResponse add(TitularDTO titularDTO) throws ErrorProcessException {
-        Titular titular = titularRepository.findById(titularDTO.getId()).orElseThrow(() -> new NotFoundException("Titular no encontrada"));
+        log.info("Account creation request received");
         try {
-            return TitularResponse.toResponse(titularRepository.save(titular));
+            log.info("Creating account holder: {}", titularDTO.getNombres());
+            return TitularResponse.toResponse(titularRepository.save(TitularDTO.toEntity(titularDTO)));
         }catch(RuntimeException e){
             throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
     }
-
     @Override
     public TitularResponse update(long id, TitularDTO titularDTO) throws ErrorProcessException {
-        Titular titular = titularRepository.findById(id).orElseThrow(() -> new NotFoundException("Titular no encontrada"));
+        log.info("Request for changes on account holder with id: "+ id);
+        Titular titular = titularRepository.findById(id).orElseThrow(() -> new NotFoundException("Account holder with id " + id + " does not exist"));
         try {
-            if(!StringUtils.isEmpty(titularDTO.getCuit())) titular.setCuit(titularDTO.getCuit());
-            if(!StringUtils.isEmpty(titularDTO.getEmail1())) titular.setCuit(titularDTO.getEmail1());
-            if(!StringUtils.isEmpty(titularDTO.getEmail2())) titular.setCuit(titularDTO.getEmail2());
-            if(!StringUtils.isEmpty(titularDTO.getNombres())) titular.setCuit(titularDTO.getNombres());
+            if(!StringUtils.isEmpty(titularDTO.getCuit()))
+                titular.setCuit(titularDTO.getCuit());
+            if(!StringUtils.isEmpty(titularDTO.getEmail1()))
+                titular.setCuit(titularDTO.getEmail1());
+            if(!StringUtils.isEmpty(titularDTO.getEmail2()))
+                titular.setCuit(titularDTO.getEmail2());
+            if(!StringUtils.isEmpty(titularDTO.getNombres()))
+                titular.setCuit(titularDTO.getNombres());
             log.info("Actualizando titular con id: {}, datos: {}",id,titular);
             return TitularResponse.toResponse(titularRepository.save(titular));
         }catch(RuntimeException e){
             throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
     }
-
     @Override
     public TitularResponse delete(long id) throws ErrorProcessException {
         Titular titularBorrado = titularRepository.findById(id).orElseThrow(() -> new NotFoundException("Cuenta no encontrada"));

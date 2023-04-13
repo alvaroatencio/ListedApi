@@ -29,7 +29,7 @@ public class TitularesController {
         this.mapper = mapper;
     }
     @GetMapping()
-    public ResponseEntity buscarTitulares() {
+    public ResponseEntity buscarTitulares() throws ErrorProcessException {
         return ResponseEntity.status(HttpStatus.OK).body(service.findAll());
     }
     @GetMapping("/{id}")

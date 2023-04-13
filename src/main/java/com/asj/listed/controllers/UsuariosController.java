@@ -1,7 +1,7 @@
 package com.asj.listed.controllers;
 
 import com.asj.listed.exceptions.ErrorProcessException;
-import com.asj.listed.model.dto.UsuarioDTO;
+import com.asj.listed.model.dto.UsuarioRequest;
 import com.asj.listed.model.response.GeneralResponse;
 import com.asj.listed.services.impl.UsuariosServiceImpl;
 import jakarta.validation.Valid;
@@ -30,25 +30,25 @@ public class UsuariosController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<?> findUserById(@Valid @PathVariable int id) throws ErrorProcessException {
+    public ResponseEntity<?> findUserById(@PathVariable int id) throws ErrorProcessException {
         return ResponseEntity.ok(usuarioService.findById(id));
     }
 
     @PostMapping()
-    public ResponseEntity<?> addUser(@Valid @RequestBody UsuarioDTO usuarioDTO) throws ErrorProcessException {
+    public ResponseEntity<?> addUser(@Valid @RequestBody UsuarioRequest usuarioRequest) throws ErrorProcessException {
         return ResponseEntity.status(HttpStatus.CREATED).body(new GeneralResponse(
                 true,
                 "Usuario creado exitosamente",
-                usuarioService.add(usuarioDTO)));
+                usuarioService.add(usuarioRequest)));
     }
 
     @PreAuthorize("hasRole('USUARIO') or hasRole('ADMIN')")
     @PutMapping("{id}")
-    public ResponseEntity<?> updateUser(@PathVariable("id") Integer id, @Valid @RequestBody UsuarioDTO usuarioDTO) throws ErrorProcessException {
+    public ResponseEntity<?> updateUser(@PathVariable("id") Integer id, @Valid @RequestBody UsuarioRequest usuarioRequest) throws ErrorProcessException {
         return ResponseEntity.ok(new GeneralResponse(
                 true,
                 "Usuario actualizado exitosamente",
-                usuarioService.update(id, usuarioDTO)));
+                usuarioService.update(id, usuarioRequest)));
     }
 
     @PreAuthorize("hasRole('USUARIO') or hasRole('ADMIN')")

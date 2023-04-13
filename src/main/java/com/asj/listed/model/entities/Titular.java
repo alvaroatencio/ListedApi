@@ -7,6 +7,7 @@ import lombok.*;
 import java.util.List;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -15,7 +16,7 @@ public class Titular {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @NotBlank
     @Column(name = "cuit")
