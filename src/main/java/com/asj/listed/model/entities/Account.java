@@ -9,7 +9,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Cuenta {
+public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,9 +31,9 @@ public class Cuenta {
 
     @ManyToOne()
     @JoinColumn(name = "id_titular", nullable = false)
-    private Titular titular;
+    private Holder titular;
 
     @ManyToOne()
     @JoinColumn(name = "id_usuario")
-    private Usuario usuario;
+    private User usuario;
 }

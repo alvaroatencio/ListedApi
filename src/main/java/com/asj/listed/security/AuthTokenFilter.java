@@ -1,11 +1,12 @@
 package com.asj.listed.security;
 
 import com.asj.listed.exceptions.UnauthorizedException;
-import com.asj.listed.security.services.JwtService;
+import com.asj.listed.security.services.JwtTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,19 +23,9 @@ import java.io.IOException;
 @Slf4j
 public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
-    private JwtService jwtService;
+    private JwtTokenService jwtService;
     @Autowired
     private UserDetailsService userDetailsService;
-
-    public AuthTokenFilter(JwtService jwtService, UserDetailsService userDetailsService) {
-        this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
-    }
-
-    public AuthTokenFilter() {
-
-    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, UnauthorizedException {
         try {
@@ -45,7 +36,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             }
             jwt = jwt.substring(7);
             if (jwtService.isTokenValid(jwt)) {
-                String username = jwtService.getUserNameFromToken(jwt);
+                String username = jwtService.getUsernameFromToken(jwt);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());

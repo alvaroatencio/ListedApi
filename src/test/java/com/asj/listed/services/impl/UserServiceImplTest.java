@@ -1,14 +1,12 @@
 package com.asj.listed.services.impl;
 
-import com.asj.listed.model.dto.UsuarioRequest;
-import com.asj.listed.model.entities.Usuario;
+import com.asj.listed.model.request.UserRequest;
 import com.asj.listed.datos.datosDummy;
 import com.asj.listed.exceptions.ErrorProcessException;
-import com.asj.listed.model.response.UsuarioResponse;
-import com.asj.listed.repositories.UsuariosRepository;
+import com.asj.listed.model.response.UserResponse;
+import com.asj.listed.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,11 +21,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-class UsuariosServiceImplTest {
+class UserServiceImplTest {
     @MockBean
-    private UsuariosRepository repo;
+    private UserRepository repo;
     @Autowired
-    private UsuariosServiceImpl service;
+    private UserServiceImpl service;
     @Mock
     private PasswordEncoder pE;
     @BeforeEach
@@ -41,7 +39,7 @@ class UsuariosServiceImplTest {
                         datosDummy.getUsuarioAdmin()
                 ));
         //WHEN
-        List<UsuarioResponse> usuarioDTOList = service.findAll();
+        List<UserResponse> usuarioDTOList = service.findAll();
         //THEN
         assertThat(usuarioDTOList.isEmpty()).isFalse();
         assertThat(usuarioDTOList.size()).isEqualTo(1);
@@ -50,18 +48,18 @@ class UsuariosServiceImplTest {
 
     @Test
     void buscarPorId() throws ErrorProcessException {
-        UsuarioRequest usuarioRequest = datosDummy.getUsuarioAdminDTO();
+        UserRequest userRequest = datosDummy.getUsuarioAdminDTO();
         this.repo.save(datosDummy.getUsuarioAdmin());
         //GIVEN
-        when(this.repo.findById(usuarioRequest.getId())
+        when(this.repo.findById(userRequest.getId())
         ).thenReturn( Optional.of(
                 datosDummy.getUsuarioAdmin()
         ));
         //WHEN
-        UsuarioResponse usuarioEncontrado = this.service.findById(usuarioRequest.getId());
+        UserResponse usuarioEncontrado = this.service.findById(userRequest.getId());
         //THEN
         assertThat(usuarioEncontrado);
-        verify(repo).findById(usuarioRequest.getId());
+        verify(repo).findById(userRequest.getId());
     }
 /*
     @Test

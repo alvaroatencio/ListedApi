@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "titulares")
-public class Titular {
+public class Holder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,8 +35,8 @@ public class Titular {
 
     @ManyToOne()
     @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuario usuario;
+    private User user;
 
     @OneToMany(mappedBy = "titular")
-    private List<Cuenta> cuentas;
+    private List<Account> accounts;
 }

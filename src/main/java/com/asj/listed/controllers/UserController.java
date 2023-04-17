@@ -1,9 +1,9 @@
 package com.asj.listed.controllers;
 
 import com.asj.listed.exceptions.ErrorProcessException;
-import com.asj.listed.model.dto.UsuarioRequest;
-import com.asj.listed.model.response.GeneralResponse;
-import com.asj.listed.services.impl.UsuariosServiceImpl;
+import com.asj.listed.model.request.UserRequest;
+import com.asj.listed.model.response.GenericResponse;
+import com.asj.listed.services.impl.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/usuarios")
 @Slf4j
-public class UsuariosController {
-    private final UsuariosServiceImpl usuarioService;
+public class UserController {
+    private final UserServiceImpl usuarioService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
     public ResponseEntity<?> findAllUsers() throws ErrorProcessException {
-        return ResponseEntity.status(HttpStatus.OK).body(new GeneralResponse(
+        return ResponseEntity.status(HttpStatus.OK).body(new GenericResponse(
                 true,
                 "Usuarios buscados exitosamente",
                 usuarioService.findAll()));
@@ -31,33 +31,33 @@ public class UsuariosController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findUserById(@PathVariable int id) throws ErrorProcessException {
-        return ResponseEntity.ok(new GeneralResponse(
+        return ResponseEntity.ok(new GenericResponse(
                 true,
                 "Usuario buscado exitosamente",
                 usuarioService.findById(id)));
     }
 
     @PostMapping()
-    public ResponseEntity<?> addUser(@Valid @RequestBody UsuarioRequest usuarioRequest) throws ErrorProcessException {
-        return ResponseEntity.status(HttpStatus.CREATED).body(new GeneralResponse(
+    public ResponseEntity<?> addUser(@Valid @RequestBody UserRequest userRequest) throws ErrorProcessException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(new GenericResponse(
                 true,
                 "Usuario creado exitosamente",
-                usuarioService.add(usuarioRequest)));
+                usuarioService.add(userRequest)));
     }
 
     @PreAuthorize("hasRole('USUARIO') or hasRole('ADMIN')")
     @PutMapping("{id}")
-    public ResponseEntity<?> updateUser(@PathVariable("id") Integer id, @Valid @RequestBody UsuarioRequest usuarioRequest) throws ErrorProcessException {
-        return ResponseEntity.ok(new GeneralResponse(
+    public ResponseEntity<?> updateUser(@PathVariable("id") Integer id, @Valid @RequestBody UserRequest userRequest) throws ErrorProcessException {
+        return ResponseEntity.ok(new GenericResponse(
                 true,
                 "Usuario actualizado exitosamente",
-                usuarioService.update(id, usuarioRequest)));
+                usuarioService.update(id, userRequest)));
     }
 
     @PreAuthorize("hasRole('USUARIO') or hasRole('ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteUser(@PathVariable int id) throws ErrorProcessException {
-        return ResponseEntity.ok(new GeneralResponse(
+        return ResponseEntity.ok(new GenericResponse(
                 true,
                 "Usuario eliminado exitosamente",
                 usuarioService.delete(id)));

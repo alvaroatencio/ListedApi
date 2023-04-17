@@ -3,6 +3,11 @@ package com.asj.listed.exceptions;
 import com.asj.listed.exceptions.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,13 +15,28 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ConfigHandlerException {
     /*Errores de autenticacion*/
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<?> handleUnauthorizedException(UnauthorizedException e) {
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(buildResponse(e.getMessage(), HttpStatus.UNAUTHORIZED));
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<?> handleAuthenticationException(AuthenticationException e) {
+        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
+        String errorMessage;
+        if (e instanceof LockedException) {
+            httpStatus = HttpStatus.LOCKED;
+            errorMessage = "User account is locked";
+        } else if (e instanceof DisabledException) {
+            httpStatus = HttpStatus.FORBIDDEN;
+            errorMessage = "User account is disabled";
+        } else if (e instanceof AccountExpiredException) {
+            httpStatus = HttpStatus.FORBIDDEN;
+            errorMessage = "User account has expired";
+        } else if (e instanceof CredentialsExpiredException) {
+            httpStatus = HttpStatus.FORBIDDEN;
+            errorMessage = "User credentials have expired";
+        } else {
+            errorMessage = "Authentication failed: " + e.getMessage();
+        }
+        return ResponseEntity.status(httpStatus).body(buildResponse(errorMessage, httpStatus));
     }
-    /* Elementos no encontrados */
+    /*Elementos no encontrados */
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<?> handleEnteredDataNotFound(NotFoundException e){
         return ResponseEntity.status(HttpStatus.NOT_FOUND)

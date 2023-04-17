@@ -1,6 +1,6 @@
 package com.asj.listed.repositories;
 
-import com.asj.listed.model.entities.Usuario;
+import com.asj.listed.model.entities.User;
 import com.asj.listed.datos.datosDummy;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,15 +10,15 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @DataJpaTest
-class UsuariosRepositoryTest {
+class UserRepositoryTest {
     @Autowired
-    private UsuariosRepository repo;
+    private UserRepository repo;
     @Test
     void findByUsuario() {
         //GIVEN
         this.repo.save(datosDummy.getUsuarioAdmin());
         //WHEN
-        Optional<Usuario> usuarioOptional = this.repo.findByUsuario(datosDummy.getUsuarioAdmin().getUsuario());
+        Optional<User> usuarioOptional = this.repo.findByUsuario(datosDummy.getUsuarioAdmin().getUsuario());
         //THEN
         assertThat(usuarioOptional.isPresent()).isTrue();
         assertThat(usuarioOptional.get().getUsuario()).isEqualTo(datosDummy.getUsuarioAdmin().getUsuario());
@@ -29,7 +29,7 @@ class UsuariosRepositoryTest {
         //GIVEN
         this.repo.save(datosDummy.getUsuarioAdmin());
         //WHEN
-        Optional<Usuario> usuarioOptional = this.repo.findByMail(datosDummy.getUsuarioAdmin().getMail());
+        Optional<User> usuarioOptional = this.repo.findByMail(datosDummy.getUsuarioAdmin().getMail());
         //THEN
         assertThat(usuarioOptional.isPresent()).isTrue();
         assertThat(usuarioOptional.get().getMail()).isEqualTo(datosDummy.getUsuarioAdmin().getMail());
@@ -40,7 +40,7 @@ class UsuariosRepositoryTest {
         //GIVEN
         this.repo.save(datosDummy.getUsuarioAdmin());
         //WHEN
-        Optional<Usuario> usuarioOptional = this.repo.findByUsuarioOrMail(datosDummy.getUsuarioAdmin().getUsuario(),datosDummy.getUsuarioAdmin().getMail());
+        Optional<User> usuarioOptional = this.repo.findByUsuarioOrMail(datosDummy.getUsuarioAdmin().getUsuario(),datosDummy.getUsuarioAdmin().getMail());
         //THEN
         assertThat(usuarioOptional.isPresent()).isTrue();
         assertThat(usuarioOptional.get().getUsuario()).isEqualTo(datosDummy.getUsuarioAdmin().getUsuario());
