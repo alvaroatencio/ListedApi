@@ -65,6 +65,9 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         return (web) -> web.ignoring()
                 .requestMatchers("/auth/login")
                 .requestMatchers(HttpMethod.POST,"/usuarios")
+                //BORRAR PUT Y DELETE, DEBEN ESTAR BLOQUEADOS
+                .requestMatchers(HttpMethod.PUT,"/usuarios")
+                .requestMatchers(HttpMethod.DELETE,"/usuarios")
                 .requestMatchers(HttpMethod.POST,"/titulares")
                 .requestMatchers(HttpMethod.POST,"/cuentas");
     }

@@ -1,7 +1,9 @@
 package com.asj.listed.security;
 
 import com.asj.listed.exceptions.UnauthorizedException;
+import com.asj.listed.model.response.GenericResponse;
 import com.asj.listed.security.services.JwtTokenService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,12 +29,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsService userDetailsService;
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, UnauthorizedException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, UnauthorizedException {;
+        response.setHeader("Content-Type", "application/json");
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
             String jwt = request.getHeader("Authorization");
             if (jwt == null || !jwt.startsWith("Bearer ")) {
-                filterChain.doFilter(request, response);
-                return;
+                throw new UnauthorizedException("Token de autorización inválido");
             }
             jwt = jwt.substring(7);
             if (jwtService.isTokenValid(jwt)) {
@@ -43,17 +46,32 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
-                throw new UnauthorizedException("Token de autorización inválido");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                String responseBody = objectMapper.writeValueAsString(new GenericResponse(
+                        false,
+                        "Invalid authentication token",
+                        "Token de autorización inválido"
+                ));
+                response.getWriter().write(responseBody);
+                return;
             }
         } catch (UnauthorizedException e) {
-            log.error("Invalid authentication token", e);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write(e.getMessage());
+            String responseBody = objectMapper.writeValueAsString(new GenericResponse(
+                    false,
+                    "Invalid authentication token",
+                    e.getMessage()
+            ));
+            response.getWriter().write(responseBody);
             return;
         } catch (Exception e){
-            log.error("Error on authentication process, e");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write(e.getMessage());
+            String responseBody = objectMapper.writeValueAsString(new GenericResponse(
+                    false,
+                    "Process error",
+                    e.getMessage()
+            ));
+            response.getWriter().write(responseBody);
             return;
         }
         filterChain.doFilter(request, response);

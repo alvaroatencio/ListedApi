@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('USUARIO') or hasRole('ADMIN')")
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable("id") Integer id, @Valid @RequestBody UserRequest userRequest) throws ErrorProcessException {
         return ResponseEntity.ok(new GenericResponse(
                 true,
