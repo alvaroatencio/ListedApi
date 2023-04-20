@@ -34,6 +34,6 @@ public class User {
     @Column(name = "rol", nullable = false)
     @Enumerated(EnumType.STRING)
     private Rol rol;
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Account> accounts = new ArrayList<>();
 }

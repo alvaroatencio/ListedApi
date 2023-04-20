@@ -20,7 +20,7 @@ public class Account {
     @Column(name = "banco")
     private String banco;
 
-    @Column(name = "cbu")
+    @Column(name = "cbu", unique = true)
     private String cbu;
 
     @Column(name = "nro_cuenta")

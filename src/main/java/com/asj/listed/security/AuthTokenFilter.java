@@ -11,8 +11,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,6 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+
 @Component
 @Slf4j
 public class AuthTokenFilter extends OncePerRequestFilter {
@@ -29,62 +30,44 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private JwtTokenService jwtTokenService;
     @Autowired
     private UserDetailsService userDetailsService;
+
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
-            throws ServletException, IOException
-    {
-        //podria hacer un metodo que haga estas validaciones pero no se si es la forma
-
+            throws ServletException, IOException {
+        System.out.println("AuthTokenFilter.doFilterInternal entra");
         response.setHeader("Content-Type", "application/json");
         ObjectMapper objectMapper = new ObjectMapper();
-        System.out.println("AuthTokenFilter.doFilterInternal entra2");
-        try {
-            System.out.println("AuthTokenFilter.doFilterInternal entra2");
-            String jwt = request.getHeader("Authorization");
-            if (jwt == null || !jwt.startsWith("Bearer ")) {
-                throw new UnauthorizedException("Token de autorización inválido");
-            }
-            jwt = jwt.substring(7);
-            if (jwtTokenService.isTokenValid(jwt)) {
-                String username = jwtTokenService.getUsernameFromToken(jwt);
+
+        String token = request.getHeader("Authorization");
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            try {
+                String username = jwtTokenService.getUsernameFromToken(token);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            } else {
+                System.out.println("AuthTokenFilter.doFilterInternal fin del try");
+            } catch (BadCredentialsException e) {
+                throw new UnauthorizedException("Token inválido o expirado");
+            } catch (UnauthorizedException e) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 String responseBody = objectMapper.writeValueAsString(new GenericResponse(
                         false,
                         "Invalid authentication token",
-                        "Token de autorización inválido"
+                        e.getMessage()
                 ));
                 response.getWriter().write(responseBody);
                 return;
+            } catch (Exception e) {
+                throw new UnauthorizedException(e.getMessage());
             }
-        } catch (UnauthorizedException e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            String responseBody = objectMapper.writeValueAsString(new GenericResponse(
-                    false,
-                    "Invalid authentication token",
-                    e.getMessage()
-            ));
-            response.getWriter().write(responseBody);
-            return;
-        } catch (Exception e){
-            throw new UnauthorizedException(e.getMessage());
-            /*
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            String responseBody = objectMapper.writeValueAsString(new GenericResponse(
-                    false,
-                    "Process error",
-                    e.getMessage()
-            ));
-            response.getWriter().write(responseBody);*/
         }
+        System.out.println("AuthTokenFilter.doFilterInternal ultimo return");
         filterChain.doFilter(request, response);
     }
 }

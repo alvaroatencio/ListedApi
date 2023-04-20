@@ -2,7 +2,7 @@ package com.asj.listed.security.config;
 
 import com.asj.listed.security.AuthTokenFilter;
 import com.asj.listed.security.services.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -14,12 +14,12 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -27,10 +27,40 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 @PropertySource("classpath:application.properties")
 public class WebSecurityConfig implements WebMvcConfigurer {
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private final AuthTokenFilter authTokenFilter;
+    private final UserDetailsServiceImpl userDetailsService;
+
+    //Esta es una forma de declarar el sevicio de usuarios si trabajaramos entidades del mismo tipo
+    /*
+    private final UserRepository userRepository;
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return username -> (UserDetails) userRepository.findByUsuarioOrMail(username,username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }*/
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .cors(Customizer.withDefaults())
+                //.csrf().disable() //esta tambien es una opcion
+                .csrf(AbstractHttpConfigurer::disable)
+                //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        ;
+        http
+                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .httpBasic(withDefaults());
+
+        //// TODO: 20/4/2023  Aca se deben definir las propiedades de authentication de los endpoints
+        http
+                .authorizeHttpRequests()
+                .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
+                .requestMatchers("/users").hasRole("ADMIN")
+        ;
+        return http.build();
+    }
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
@@ -55,40 +85,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
-    }
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        http.cors(Customizer.withDefaults());
-
-        http.csrf(AbstractHttpConfigurer::disable);
-
-        http.authorizeHttpRequests((auth) -> auth
-                //.anyRequest().authenticated()
-                .anyRequest().permitAll());
-
-        http.httpBasic(withDefaults());
-
-        return http.build();
-    }
-    //// TODO: 20/4/2023  no esta funcionando este método:
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
-                .requestMatchers("/auth/login")
-                .requestMatchers(HttpMethod.POST,"/usuarios")
-                .requestMatchers(HttpMethod.POST,"/titulares")
-                .requestMatchers(HttpMethod.POST,"/cuentas");
-        /*return (web) -> web.ignoring()
-                .requestMatchers(HttpMethod.POST, "/login")
-                .requestMatchers(HttpMethod.POST, "/usuarios")
-                //BORRAR PUT Y DELETE, DEBEN ESTAR BLOQUEADOS
-                .requestMatchers(HttpMethod.PUT, "/usuarios")
-                .requestMatchers(HttpMethod.DELETE, "/usuarios")
-                .requestMatchers(HttpMethod.POST, "/titulares")
-                .requestMatchers(HttpMethod.POST, "/cuentas");
-         */
     }
 
     @Bean

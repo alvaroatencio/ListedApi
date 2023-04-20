@@ -34,6 +34,6 @@ public class AuthController {
         return ResponseEntity.ok(new GenericResponse(
                 true,
                 "Valid credentials",
-                jwtTokenService.createToken(authentication)));
+                jwtTokenService.generateToken(authentication)));
     }
 }
