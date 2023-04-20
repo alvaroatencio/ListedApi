@@ -18,24 +18,18 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "usuarios")
 public class UserSecurityEntity implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     @Column(name = "usuario")
     private String username;
-
     @Column(name = "password")
     private String password;
-
     @Column(name = "mail")
     private String email;
-
     @Column(name = "rol")
     @Enumerated(EnumType.STRING)
     private Rol rol;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();

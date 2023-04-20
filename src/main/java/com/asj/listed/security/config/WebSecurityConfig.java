@@ -1,6 +1,7 @@
 package com.asj.listed.security.config;
 
 import com.asj.listed.security.AuthTokenFilter;
+import com.asj.listed.security.exceptions.handler.AuthorizationHandler;
 import com.asj.listed.security.services.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,22 +45,28 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     }*/
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        //CORS Y SESSION
         http
                 .cors(Customizer.withDefaults())
                 //.csrf().disable() //esta tambien es una opcion
                 .csrf(AbstractHttpConfigurer::disable)
-                //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        ;
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        //FILTROS
         http
                 .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(withDefaults());
-
-        //// TODO: 20/4/2023  Aca se deben definir las propiedades de authentication de los endpoints
+        //CONFIGURACION DE ENDPOINTS
         http
                 .authorizeHttpRequests()
                 .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
                 .requestMatchers("/users").hasRole("ADMIN")
+                //TEST
+                .requestMatchers("/test/usuario").hasRole("USUARIO")
+                .requestMatchers("/test/admin").hasRole("ADMIN")
+                .requestMatchers("/test/bloqueado").hasRole("BLOQUEADO")
         ;
+        //CONFIGURACION DE HANDLER DE EXCEPCIONES
+        http.exceptionHandling().accessDeniedHandler(new AuthorizationHandler());
         return http.build();
     }
     @Bean
@@ -81,17 +89,14 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
-
     @Bean
     public SecurityContextHolder securityContextHolder() {
         return new SecurityContextHolder();
     }
-
     //HAY 2 FORMAS DE LIMPIAR EL CORS:
     @Override
     public void addCorsMappings(CorsRegistry registry) {

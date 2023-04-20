@@ -17,7 +17,6 @@ public class AccountRequest {
     private String sucursal;
     private HolderRequest titular;
     private Long usuarioId;
-
     public static Account toEntity(AccountRequest accountRequest) {
         return Account.builder()
                 .id(accountRequest.getId())

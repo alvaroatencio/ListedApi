@@ -17,7 +17,6 @@ public class HolderResponse {
     private String email2;
     private String nombres;
     private long id_usuario;
-
     public static HolderResponse toResponse(Holder holder){
         return HolderResponse.builder()
                 .id(holder.getId())

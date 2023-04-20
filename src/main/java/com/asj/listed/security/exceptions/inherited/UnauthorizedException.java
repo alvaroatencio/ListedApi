@@ -1,4 +1,4 @@
-package com.asj.listed.exceptions;
+package com.asj.listed.security.exceptions.inherited;
 
 import org.springframework.security.core.AuthenticationException;
 

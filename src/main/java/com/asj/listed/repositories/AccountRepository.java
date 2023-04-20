@@ -11,7 +11,6 @@ import java.util.List;
 
 public interface AccountRepository extends JpaRepository<Account,Long>, JpaSpecificationExecutor<Account> {
     List<AccountResponse> findByUsuario_Id(long id_usuario);
-
     //// TODO: 11/4/2023  revisar, puede que tenga que modificar los root
     static Specification<Account> bancoOrTitular_NombresOrTitular_Email1OrTitular_Email2OrAlias(String search){
         return((root, query, criteriaBuilder) -> {

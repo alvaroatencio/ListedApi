@@ -28,12 +28,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         System.out.println("UserDetailsServiceImpl.loadUserByUsername entra");
         User user = repo.findByUsuarioOrMail(username, username).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
         GrantedAuthority rol = new SimpleGrantedAuthority("ROLE_" + user.getRol());
-
         System.out.println("UserDetailsServiceImpl.loadUserByUsername \n" + user + "\n" + new org.springframework.security.core.userdetails.User(
                 user.getUsuario(),
                 user.getPassword(),
                 Collections.singletonList(rol)));
-
         return new org.springframework.security.core.userdetails.User(
                 user.getUsuario(),
                 user.getPassword(),

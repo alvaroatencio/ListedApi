@@ -22,20 +22,16 @@ import static com.asj.listed.exceptions.response.ErrorResponse.ERROR_NOT_FOUND;
 @Slf4j
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository cuentaRepository;
-
     @Override
     public List<AccountResponse> findAll() throws ErrorProcessException {
         try {
-            System.out.println("AccountServiceImpl.findAll 1");
             List<AccountResponse> ac = cuentaRepository.findAll()
                     .stream()
                     .map(AccountResponse::toResponse)
                     .collect(Collectors.toList());
-            System.out.println("AccountServiceImpl.findAll 2");
             return ac;
-        } catch(Exception e){
-            System.out.println("AccountServiceImpl.findAll 3");
-            return null;
+        } catch(RuntimeException e){
+            throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
     }
 
@@ -49,7 +45,6 @@ public class AccountServiceImpl implements AccountService {
             throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
     }
-
     //// TODO: 12/4/2023  ARREGLAR EN ESTOS METODOS LAS RELACIONES
     @Override
     public AccountResponse add(AccountRequest accountRequest) throws ErrorProcessException {
@@ -61,7 +56,6 @@ public class AccountServiceImpl implements AccountService {
             throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
     }
-
     @Override
     public AccountResponse update(long id, AccountRequest accountRequest) throws ErrorProcessException {
         Account account = cuentaRepository.findById(id).orElseThrow(() ->
@@ -82,7 +76,6 @@ public class AccountServiceImpl implements AccountService {
             throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
     }
-
     @Override
     public AccountResponse delete(long id) throws ErrorProcessException {
         Account accountAEliminar = cuentaRepository.findById(id).orElseThrow(() ->
@@ -94,7 +87,6 @@ public class AccountServiceImpl implements AccountService {
             throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
     }
-
     @Override
     public List<AccountResponse> findByUserId(long id_usuario) throws ErrorProcessException {
         try {

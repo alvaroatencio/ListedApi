@@ -8,6 +8,7 @@ import com.asj.listed.model.entities.User;
 import com.asj.listed.model.response.UserResponse;
 import com.asj.listed.repositories.UserRepository;
 import com.asj.listed.services.intefaces.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

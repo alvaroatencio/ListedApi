@@ -17,7 +17,6 @@ public class AccountResponse {
     private String sucursal;
     private Holder holder;
     private Long usuarioId;
-
     public static AccountResponse toResponse(Account account){
         return AccountResponse.builder()
                 .id(account.getId())

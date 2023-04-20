@@ -1,6 +1,7 @@
 package com.asj.listed.model.entities;
 
 import com.asj.listed.model.enums.Rol;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;

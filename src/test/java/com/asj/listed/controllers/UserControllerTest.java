@@ -5,7 +5,6 @@ import com.asj.listed.exceptions.response.ErrorResponse;
 import com.asj.listed.model.entities.User;
 import com.asj.listed.model.request.UserRequest;
 import com.asj.listed.datos.datosDummy;
-import com.asj.listed.model.response.GenericResponse;
 import com.asj.listed.services.intefaces.UserService;
 import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.Test;
