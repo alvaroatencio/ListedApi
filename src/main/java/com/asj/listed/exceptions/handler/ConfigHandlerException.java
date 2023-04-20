@@ -1,5 +1,8 @@
-package com.asj.listed.exceptions;
+package com.asj.listed.exceptions.handler;
 
+import com.asj.listed.exceptions.BadRequestException;
+import com.asj.listed.exceptions.ErrorProcessException;
+import com.asj.listed.exceptions.NotFoundException;
 import com.asj.listed.exceptions.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,17 +52,19 @@ public class ConfigHandlerException {
                 .body(buildResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
     }
     /* 400 */
-    @ExceptionHandler(BadRequestException.class)
+    @ExceptionHandler({BadRequestException.class
+            ,MethodArgumentNotValidException.class
+    })
     public ResponseEntity<?> handleBadRequest(BadRequestException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(buildResponse(e.getMessage(), HttpStatus.BAD_REQUEST));
-    }
+    }/*
     /* validation constroller request */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> argumentNotValidationRequest(MethodArgumentNotValidException e){
+    /*@ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> argumentNotValidationRequest(MethodArgumentNotValidException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(buildResponse(e.getFieldError().getDefaultMessage(), HttpStatus.BAD_REQUEST));
-    }
+    }*/
     private static ErrorResponse buildResponse(String message, HttpStatus httpStatus) {
         return new ErrorResponse(message, httpStatus.value());
     }

@@ -1,6 +1,6 @@
 package com.asj.listed.services.impl;
 
-import com.asj.listed.exceptions.DuplicatedEntityException;
+import com.asj.listed.exceptions.inherited.FieldAlreadyExist;
 import com.asj.listed.exceptions.ErrorProcessException;
 import com.asj.listed.exceptions.NotFoundException;
 import com.asj.listed.model.request.UserRequest;
@@ -51,9 +51,9 @@ public class UserServiceImpl implements UserService {
     public UserResponse add(UserRequest userRequest) throws ErrorProcessException {
         log.info("User creation request received");
         userRepository.findByUsuario(userRequest.getUsuario())
-                .ifPresent(usuario -> { throw new DuplicatedEntityException("User"); });
+                .ifPresent(usuario -> { throw new FieldAlreadyExist("User"); });
         userRepository.findByMail(userRequest.getMail())
-                .ifPresent(usuario -> { throw new DuplicatedEntityException("Email"); });
+                .ifPresent(usuario -> { throw new FieldAlreadyExist("Email"); });
         String passwordCifrado = passwordEncoder.encode(userRequest.getPassword());
         userRequest.setPassword(passwordCifrado);
         log.info("Creating user: {}", userRequest.getUsuario());

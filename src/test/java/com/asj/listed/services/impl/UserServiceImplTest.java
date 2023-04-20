@@ -1,5 +1,6 @@
 package com.asj.listed.services.impl;
 
+import com.asj.listed.model.entities.User;
 import com.asj.listed.model.request.UserRequest;
 import com.asj.listed.datos.datosDummy;
 import com.asj.listed.exceptions.ErrorProcessException;
@@ -7,6 +8,7 @@ import com.asj.listed.model.response.UserResponse;
 import com.asj.listed.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,7 +38,7 @@ class UserServiceImplTest {
         //GIVEN
         when(this.repo.findAll())
                 .thenReturn(Arrays.asList(
-                        datosDummy.getUsuarioAdmin()
+                        datosDummy.getAdmin()
                 ));
         //WHEN
         List<UserResponse> usuarioDTOList = service.findAll();
@@ -48,12 +50,12 @@ class UserServiceImplTest {
 
     @Test
     void buscarPorId() throws ErrorProcessException {
-        UserRequest userRequest = datosDummy.getUsuarioAdminDTO();
-        this.repo.save(datosDummy.getUsuarioAdmin());
+        UserRequest userRequest = datosDummy.getAdminRequest();
+        this.repo.save(datosDummy.getAdmin());
         //GIVEN
         when(this.repo.findById(userRequest.getId())
         ).thenReturn( Optional.of(
-                datosDummy.getUsuarioAdmin()
+                datosDummy.getAdmin()
         ));
         //WHEN
         UserResponse usuarioEncontrado = this.service.findById(userRequest.getId());
@@ -61,25 +63,24 @@ class UserServiceImplTest {
         assertThat(usuarioEncontrado);
         verify(repo).findById(userRequest.getId());
     }
-/*
     @Test
     void crear() throws ErrorProcessException {
-        UsuarioRequest usuarioRequest = datosDummy.getUsuarioAdminDTO();
+        UserRequest usuarioRequest = datosDummy.getUserRequest();
         service.add(usuarioRequest);
         //GIVEN
         when(
                 this.repo.save(
-                        mapper.usuariosDTOToUsuariosEntity(usuarioRequest)
+                        UserRequest.toEntity(usuarioRequest)
                 )
-        ).thenReturn(mapper.usuariosDTOToUsuariosEntity(usuarioRequest));
+        ).thenReturn(UserRequest.toEntity(usuarioRequest));
         //THEN
-        ArgumentCaptor<Usuario> userArgumentCaptor = ArgumentCaptor.forClass(Usuario.class);
+        ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
         verify(repo).save(userArgumentCaptor.capture());
-        Usuario usuarioCaptor = userArgumentCaptor.getValue();
+        User usuarioCaptor = userArgumentCaptor.getValue();
 
-        assertThat(usuarioCaptor).isEqualTo(mapper.usuariosDTOToUsuariosEntity( datosDummy.getUsuarioAdminDTO()));
+        assertThat(usuarioCaptor).isEqualTo(UserRequest.toEntity(usuarioRequest));
         verify(repo).findByUsuario(anyString());
-    }*/
+    }
 
     @Test
     void actualizar() {

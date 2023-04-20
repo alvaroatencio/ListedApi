@@ -18,14 +18,22 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetailsServiceImpl(UserRepository repo) {
         this.repo = repo;
     }
+
+    //todo Esta implementacion es necesaria debido a que mi repositorio trabaja con entidades User y necesito convertirlas a UserDetails
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
         Optional<User> usuarioOptional = repo.findByUsuarioOrMail(username, username);
         if (usuarioOptional.isPresent()) {
             User user = usuarioOptional.get();
-            GrantedAuthority roles = new SimpleGrantedAuthority("ROLE_" + user.getRol());
+            GrantedAuthority rol = new SimpleGrantedAuthority("ROLE_" + user.getRol());
+            System.out.println("UserDetailsServiceImpl.loadUserByUsername \n"+user+"\n"+new org.springframework.security.core.userdetails.User(
+                    user.getUsuario(),
+                    user.getPassword(),
+                    Collections.singletonList(rol)));
             return new org.springframework.security.core.userdetails.User(
-                    user.getUsuario(), user.getPassword(), Collections.singletonList(roles));
+                    user.getUsuario(),
+                    user.getPassword(),
+                    Collections.singletonList(rol));
         }
         throw new UsernameNotFoundException("Usuario no encontrado");
     }

@@ -1,22 +1,19 @@
 package com.asj.listed.security.services;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 @Service
+@Component
 public class JwtTokenService{
-    @Value("${jwt.secret}")
-    private String jwtSecret;
-    @Value("${jwt.expiration}")
-    private int jwtExpiration;
+    private String jwtSecret="2948404D635166546A576E5A7234753778214125432A462D4A614E645267556B";
+    private int jwtExpiration=60000;
 
     public String createToken(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();

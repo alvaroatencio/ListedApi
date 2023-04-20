@@ -2,11 +2,9 @@ package com.asj.listed.security.services;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class JwtServiceTest {
 
-    @Test
+    /*@Test
     void crearToken() {
     }
 
@@ -22,5 +20,5 @@ class JwtServiceTest {
 
     @Test
     void extractClaim() {
-    }
+    }*/
 }
