@@ -60,12 +60,20 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         http
                 .authorizeHttpRequests()
                 .requestMatchers("/auth/login").permitAll()
+
+                //USERS
                 //si existe una regla general igual se debe agregar el rol correspondiente, en este caso ADMIN
                 .requestMatchers(HttpMethod.GET, "/users/{id}").hasAnyRole("USUARIO","ADMIN")
-                .requestMatchers(HttpMethod.PUT).permitAll()
+                .requestMatchers(HttpMethod.POST).permitAll()
+                .requestMatchers(HttpMethod.PUT).hasAnyRole("USUARIO","ADMIN")
                 .requestMatchers(HttpMethod.DELETE).hasAnyRole("ADMIN", "USUARIO")
                 //la regla general debe ir luego de las específicas
                 .requestMatchers(HttpMethod.GET, "/users/**").hasRole("ADMIN")
+                //ACCOUNTS
+                .requestMatchers("/accounts").hasAnyRole("ADMIN","USUARIO")
+                //HOLDERS
+                .requestMatchers("/accounts").hasAnyRole("ADMIN","USUARIO")
+                //TEST
                 .requestMatchers("/test/usuario").hasRole("USUARIO")
                 .requestMatchers("/test/admin").hasRole("ADMIN")
                 .requestMatchers("/test/bloqueado").hasRole("BLOQUEADO")

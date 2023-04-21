@@ -1,6 +1,5 @@
 package com.asj.listed.exceptions.response;
 
-import com.fasterxml.jackson.annotation.JsonRootName;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.http.HttpStatus;

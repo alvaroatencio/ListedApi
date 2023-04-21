@@ -25,7 +25,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     //// TODO: 20/4/2023  DEBERIA USAR LA ENTIDAD
     @Override
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        System.out.println("UserDetailsServiceImpl.loadUserByUsername entra");
         User user = repo.findByUsuarioOrMail(username, username).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
         GrantedAuthority rol = new SimpleGrantedAuthority("ROLE_" + user.getRol());
         System.out.println("UserDetailsServiceImpl.loadUserByUsername \n" + user + "\n" + new org.springframework.security.core.userdetails.User(
