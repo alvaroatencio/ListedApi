@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class UserController {
     private final UserServiceImpl usuarioService;
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
     public ResponseEntity<?> findAllUsers() throws ErrorProcessException {
         return new ResponseUtils().buildResponse(
@@ -26,14 +25,12 @@ public class UserController {
                 "Usuarios buscados exitosamente",
                 usuarioService.findAll());
     }
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findUserById(@PathVariable int id) throws ErrorProcessException {
         return new ResponseUtils().buildResponse(
                 HttpStatus.OK,
                 "Usuario buscado exitosamente",
-                usuarioService.findById(id))
-                ;
+                usuarioService.findById(id));
     }
     @PostMapping()
     public ResponseEntity<?> addUser(@Valid @RequestBody UserRequest userRequest) throws ErrorProcessException {
@@ -50,7 +47,6 @@ public class UserController {
                 "Usuario actualizado exitosamente",
                 usuarioService.update(id, userRequest));
     }
-    @PreAuthorize("hasRole('USUARIO') or hasRole('ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteUser(@PathVariable int id) throws ErrorProcessException {
         return new ResponseUtils().buildResponse(

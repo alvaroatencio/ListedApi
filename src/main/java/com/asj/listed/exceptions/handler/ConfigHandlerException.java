@@ -3,7 +3,7 @@ package com.asj.listed.exceptions.handler;
 import com.asj.listed.exceptions.BadRequestException;
 import com.asj.listed.exceptions.ErrorProcessException;
 import com.asj.listed.exceptions.NotFoundException;
-import com.asj.listed.exceptions.response.ErrorResponse;
+import com.asj.listed.model.response.ResponseUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,21 +17,17 @@ public class ConfigHandlerException {
     /* 500 */
     @ExceptionHandler(ErrorProcessException.class)
     public ResponseEntity<?> handleEnteredDataConflict(ErrorProcessException e){
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
+        return ResponseUtils.buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,e.getMessage());
     }
     /* 400 */
-        /*Elementos no encontrados */
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<?> handleEnteredDataNotFound(NotFoundException e){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value()));
+        return ResponseUtils.buildErrorResponse(HttpStatus.NOT_FOUND,e.getMessage());
     }
     @ExceptionHandler({BadRequestException.class
             ,MethodArgumentNotValidException.class
     })
     public ResponseEntity<?> handleBadRequest(BadRequestException e){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value()));
+        return ResponseUtils.buildErrorResponse(HttpStatus.BAD_REQUEST,e.getMessage());
     }
 }

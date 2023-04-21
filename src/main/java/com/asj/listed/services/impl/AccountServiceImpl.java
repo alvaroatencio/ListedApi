@@ -34,7 +34,6 @@ public class AccountServiceImpl implements AccountService {
             throw new ErrorProcessException(ERROR_NOT_FOUND + e.getMessage());
         }
     }
-
     @Override
     public AccountResponse findById(long id) throws ErrorProcessException {
         Account cuentas = cuentaRepository.findById(id).orElseThrow(() ->

@@ -35,7 +35,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     private final AuthTokenFilter authTokenFilter;
     private final UserDetailsServiceImpl userDetailsService;
 
-    //Esta es una forma de declarar el sevicio de usuarios si trabajaramos entidades del mismo tipo
+    //Esta es una forma de declarar el servicio de usuarios si trabajáramos entidades del mismo tipo
     /*
     private final UserRepository userRepository;
     @Bean
@@ -48,24 +48,29 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         //CORS Y SESSION
         http
                 .cors(Customizer.withDefaults())
-                //.csrf().disable() //esta tambien es una opcion
+                //.csrf().disable() //esta también es una opción
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         //FILTROS
         http
                 .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(withDefaults());
-        //CONFIGURACION DE ENDPOINTS
+        //CONFIGURACIÓN DE ENDPOINTS
+        //dato importante, el orden si importa cuando estamos configurando los métodos de un mismo controller
         http
                 .authorizeHttpRequests()
-                .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
-                .requestMatchers("/users").hasRole("ADMIN")
-                //TEST
+                .requestMatchers("/auth/login").permitAll()
+                //si existe una regla general igual se debe agregar el rol correspondiente, en este caso ADMIN
+                .requestMatchers(HttpMethod.GET, "/users/{id}").hasAnyRole("USUARIO","ADMIN")
+                .requestMatchers(HttpMethod.PUT).permitAll()
+                .requestMatchers(HttpMethod.DELETE).hasAnyRole("ADMIN", "USUARIO")
+                //la regla general debe ir luego de las específicas
+                .requestMatchers(HttpMethod.GET, "/users/**").hasRole("ADMIN")
                 .requestMatchers("/test/usuario").hasRole("USUARIO")
                 .requestMatchers("/test/admin").hasRole("ADMIN")
                 .requestMatchers("/test/bloqueado").hasRole("BLOQUEADO")
         ;
-        //CONFIGURACION DE HANDLER DE EXCEPCIONES
+        //CONFIGURACIÓN DE HANDLER DE EXCEPCIONES
         http.exceptionHandling().accessDeniedHandler(new AuthorizationHandler());
         return http.build();
     }

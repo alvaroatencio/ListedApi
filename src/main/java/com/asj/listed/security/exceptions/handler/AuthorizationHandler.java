@@ -1,9 +1,11 @@
 package com.asj.listed.security.exceptions.handler;
 
 import com.asj.listed.exceptions.response.ErrorResponse;
+import com.asj.listed.model.response.ResponseUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -18,6 +20,7 @@ import java.io.IOException;
 
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+@Slf4j
 public class AuthorizationHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
@@ -25,33 +28,33 @@ public class AuthorizationHandler implements AccessDeniedHandler {
         response.setStatus(FORBIDDEN.value());
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getWriter(),
-                new ErrorResponse("You do not have the permissions to access this service ", HttpStatus.FORBIDDEN.value()));
+                ErrorResponse.build(HttpStatus.FORBIDDEN,"You do not have the permissions to access this service "));
     }
     /*Errores de autenticacion*/
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(new ErrorResponse("Access denied "+e.getMessage(), HttpStatus.FORBIDDEN.value()));
+        return ResponseUtils.buildErrorResponse(HttpStatus.FORBIDDEN,"Access denied "+e.getMessage());
     }
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<?> handleAuthenticationException(AuthenticationException e) {
-        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
-        String errorMessage;
+        HttpStatus httpStatus;
+        String errorMessage="Authentication failed";
         if (e instanceof LockedException) {
             httpStatus = HttpStatus.LOCKED;
-            errorMessage = "User account is locked";
+            log.warn("User account is locked");
         } else if (e instanceof DisabledException) {
             httpStatus = HttpStatus.FORBIDDEN;
-            errorMessage = "User account is disabled";
+            log.warn("User account is disabled");
         } else if (e instanceof AccountExpiredException) {
             httpStatus = HttpStatus.FORBIDDEN;
-            errorMessage = "User account has expired";
+            log.warn("User account has expired");
         } else if (e instanceof CredentialsExpiredException) {
             httpStatus = HttpStatus.FORBIDDEN;
-            errorMessage = "User credentials have expired";
+            log.warn("User credentials have expired");
         } else {
-            errorMessage = "Authentication failed: " + e.getMessage();
+            httpStatus = HttpStatus.FORBIDDEN;
+            log.warn("Unknown authentication error");
         }
-        return ResponseEntity.status(httpStatus).body(new ErrorResponse(errorMessage, httpStatus.value()));
+        return ResponseUtils.buildErrorResponse(httpStatus,errorMessage);
     }
 }
