@@ -12,7 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/cuentas")
+@RequestMapping("/accounts")
 @Slf4j
 @RequiredArgsConstructor
 public class AccountController {

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping("/titulares")
+@RequestMapping("/holders")
 @Slf4j
 public class HolderController {
     public final HolderServiceImpl service;
